@@ -103,7 +103,7 @@ final class FloatingPanelController: NSWindowController {
     static func panelSize(for mode: PanelSizeMode) -> NSSize {
         switch mode {
         case .standard: NSSize(width: 280, height: 130)
-        case .compact: NSSize(width: 180, height: 60)
+        case .compact: NSSize(width: 320, height: 50)
         }
     }
 
@@ -163,6 +163,7 @@ struct FloatingReminderPanelView: View {
 
     private func compactContent(reminder: Reminder) -> some View {
         let progress = DayProgress.fraction(for: currentTime)
+        let maxW: CGFloat = 320
 
         return ZStack {
             RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -187,53 +188,60 @@ struct FloatingReminderPanelView: View {
 
             animationLayer(progress: progress)
 
-            HStack(spacing: 8) {
-                Text(currentTime, format: .dateTime.hour().minute().second())
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
-                    .foregroundStyle(.white.opacity(isBreathGlowActive ? 1.0 : 0.5))
-                    .monospacedDigit()
-                    .contentTransition(.numericText())
-                    .shadow(color: .white.opacity(isBreathGlowActive ? 0.9 : 0), radius: isBreathGlowActive ? 8 : 0)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: 6) {
+                    Text(currentTime, format: .dateTime.hour().minute().second())
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.white.opacity(isBreathGlowActive ? 1.0 : 0.5))
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+                        .shadow(color: .white.opacity(isBreathGlowActive ? 0.9 : 0), radius: isBreathGlowActive ? 8 : 0)
 
-                Text(reminder.title)
-                    .font(.system(size: 12, weight: .bold))
-                    .foregroundStyle(.white)
-                    .lineLimit(1)
-                    .accessibilityIdentifier("floatingPanelTitle")
+                    Text("·")
+                        .foregroundStyle(.white.opacity(0.4))
 
-                Spacer(minLength: 0)
+                    Text(reminder.title)
+                        .font(.system(size: 12, weight: .bold))
+                        .foregroundStyle(.white)
+                        .lineLimit(2)
+                        .accessibilityIdentifier("floatingPanelTitle")
 
-                if isHovering {
-                    HStack(spacing: 4) {
-                        Button {
-                            store.selectNextReminder()
-                        } label: {
-                            Image(systemName: "forward.fill")
-                                .font(.system(size: 8, weight: .bold))
-                                .foregroundStyle(.white)
+                    Spacer(minLength: 0)
+
+                    if isHovering {
+                        HStack(spacing: 4) {
+                            Button {
+                                store.selectNextReminder()
+                            } label: {
+                                Image(systemName: "forward.fill")
+                                    .font(.system(size: 8, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+                            .frame(width: 18, height: 18)
+                            .background(.white.opacity(0.18), in: Circle())
+                            .accessibilityIdentifier("nextReminderButton")
+
+                            Button {
+                                store.isFloatingPanelVisible = false
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 8, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+                            .frame(width: 18, height: 18)
+                            .background(.white.opacity(0.18), in: Circle())
                         }
-                        .buttonStyle(.plain)
-                        .frame(width: 18, height: 18)
-                        .background(.white.opacity(0.18), in: Circle())
-                        .accessibilityIdentifier("nextReminderButton")
-
-                        Button {
-                            store.isFloatingPanelVisible = false
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 8, weight: .bold))
-                                .foregroundStyle(.white)
-                        }
-                        .buttonStyle(.plain)
-                        .frame(width: 18, height: 18)
-                        .background(.white.opacity(0.18), in: Circle())
+                        .transition(.opacity.combined(with: .scale(scale: 0.8)))
                     }
-                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
                 }
             }
             .padding(.horizontal, 10)
+            .padding(.vertical, 8)
         }
-        .frame(width: panelSize.width, height: panelSize.height)
+        .frame(maxWidth: maxW)
+        .fixedSize(horizontal: true, vertical: true)
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 

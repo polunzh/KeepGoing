@@ -114,29 +114,45 @@ struct CycleIntervalTests {
 @Suite("Palette")
 struct PaletteTests {
 
-    /// There should be at least 8 palette options to give users sufficient choice.
+    /// Should have 256 presets (16x16 grid).
     @Test
-    func palette_hasAtLeastEightOptions() {
-        #expect(ReminderPalette.allCases.count >= 8,
-                "Need at least 8 palettes, currently have \(ReminderPalette.allCases.count)")
+    func palette_has256Presets() {
+        #expect(ReminderPalette.allPresets.count == 256)
     }
 
     /// Every palette must have distinct start and end colors (gradient, not flat).
     @Test
     func palette_allHaveGradient() {
-        for palette in ReminderPalette.allCases {
+        for palette in ReminderPalette.allPresets {
             #expect(palette.startColor != palette.endColor,
-                    "\(palette.rawValue) should have a gradient, not a flat color")
+                    "hue \(palette.hue) should have a gradient, not a flat color")
         }
     }
 
     /// Every palette must have a badgeText label.
     @Test
     func palette_allHaveBadgeText() {
-        for palette in ReminderPalette.allCases {
+        for palette in ReminderPalette.allPresets {
             #expect(!palette.badgeText.isEmpty,
-                    "\(palette.rawValue) should have a badge text")
+                    "hue \(palette.hue) should have a badge text")
         }
+    }
+
+    /// Legacy enum strings should decode correctly.
+    @Test
+    func palette_legacyDecoding() throws {
+        let json = Data(#""sky""#.utf8)
+        let palette = try JSONDecoder().decode(ReminderPalette.self, from: json)
+        #expect(abs(palette.hue - 0.58) < 0.001)
+    }
+
+    /// New hue values should round-trip correctly.
+    @Test
+    func palette_hueRoundTrip() throws {
+        let original = ReminderPalette(hue: 0.42)
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(ReminderPalette.self, from: data)
+        #expect(abs(decoded.hue - 0.42) < 0.001)
     }
 }
 

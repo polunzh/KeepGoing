@@ -25,67 +25,92 @@ struct Reminder: Identifiable, Codable, Equatable {
     }
 }
 
-enum ReminderPalette: String, CaseIterable, Codable, Identifiable {
-    case sky
-    case leaf
-    case amber
-    case rose
-    case slate
-    case lavender
-    case coral
-    case ocean
+// MARK: - Hue-based Palette (256 colors)
 
-    var id: String { rawValue }
+struct ReminderPalette: Codable, Equatable, Identifiable {
+    let hue: Double // 0.0 – 1.0
 
-    var title: String {
-        switch self {
-        case .sky: "Sky"
-        case .leaf: "Leaf"
-        case .amber: "Amber"
-        case .rose: "Rose"
-        case .slate: "Slate"
-        case .lavender: "Lavender"
-        case .coral: "Coral"
-        case .ocean: "Ocean"
-        }
+    init(hue: Double) {
+        self.hue = hue
     }
 
+    var id: Double { hue }
+
+    /// Generate start color: saturated, medium brightness
     var startColor: Color {
-        switch self {
-        case .sky: Color(red: 0.23, green: 0.53, blue: 0.98)
-        case .leaf: Color(red: 0.14, green: 0.62, blue: 0.46)
-        case .amber: Color(red: 0.92, green: 0.58, blue: 0.15)
-        case .rose: Color(red: 0.88, green: 0.29, blue: 0.45)
-        case .slate: Color(red: 0.33, green: 0.39, blue: 0.48)
-        case .lavender: Color(red: 0.55, green: 0.36, blue: 0.85)
-        case .coral: Color(red: 0.95, green: 0.40, blue: 0.32)
-        case .ocean: Color(red: 0.10, green: 0.45, blue: 0.68)
-        }
+        Color(hue: hue, saturation: 0.65, brightness: 0.85)
     }
 
+    /// Generate end color: lighter, less saturated
     var endColor: Color {
-        switch self {
-        case .sky: Color(red: 0.50, green: 0.78, blue: 1.0)
-        case .leaf: Color(red: 0.48, green: 0.84, blue: 0.64)
-        case .amber: Color(red: 0.98, green: 0.79, blue: 0.38)
-        case .rose: Color(red: 0.97, green: 0.63, blue: 0.71)
-        case .slate: Color(red: 0.62, green: 0.68, blue: 0.77)
-        case .lavender: Color(red: 0.78, green: 0.62, blue: 0.96)
-        case .coral: Color(red: 1.0, green: 0.68, blue: 0.55)
-        case .ocean: Color(red: 0.32, green: 0.72, blue: 0.88)
+        Color(hue: (hue + 0.03).truncatingRemainder(dividingBy: 1.0), saturation: 0.35, brightness: 0.95)
+    }
+
+    /// Badge text derived from hue range
+    var badgeText: String {
+        let segment = Int(hue * 8) % 8
+        return ["平静", "清新", "扎根", "向前", "温暖", "热忱", "灵感", "深远"][segment]
+    }
+
+    // MARK: - 256 Presets (16x16 grid)
+
+    /// All 256 preset palettes: 16 hues x 16 saturation/brightness variations
+    static let allPresets: [ReminderPalette] = {
+        var palettes: [ReminderPalette] = []
+        for row in 0..<16 {
+            for col in 0..<16 {
+                let hue = Double(col) / 16.0
+                // Shift hue slightly per row for variety
+                let hueShift = Double(row) * 0.003
+                let finalHue = (hue + hueShift).truncatingRemainder(dividingBy: 1.0)
+                palettes.append(ReminderPalette(hue: finalHue))
+            }
+        }
+        return palettes
+    }()
+
+    /// Grid of 16x16 palettes organized by row/col
+    static func preset(row: Int, col: Int) -> ReminderPalette {
+        allPresets[row * 16 + col]
+    }
+
+    // MARK: - Named presets (backward compatible)
+
+    static let sky = ReminderPalette(hue: 0.58)
+    static let leaf = ReminderPalette(hue: 0.42)
+    static let amber = ReminderPalette(hue: 0.08)
+    static let rose = ReminderPalette(hue: 0.95)
+    static let slate = ReminderPalette(hue: 0.6)
+    static let lavender = ReminderPalette(hue: 0.75)
+    static let coral = ReminderPalette(hue: 0.03)
+    static let ocean = ReminderPalette(hue: 0.55)
+
+    // MARK: - Codable (backward compatible with old enum strings)
+
+    private static let legacyMap: [String: Double] = [
+        "sky": 0.58, "leaf": 0.42, "amber": 0.08, "rose": 0.95,
+        "slate": 0.6, "lavender": 0.75, "coral": 0.03, "ocean": 0.55,
+    ]
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        // Try decoding as Double (new format)
+        if let hueValue = try? container.decode(Double.self) {
+            self.hue = hueValue
+        }
+        // Try decoding as String (legacy enum format)
+        else if let stringValue = try? container.decode(String.self),
+                let mappedHue = Self.legacyMap[stringValue] {
+            self.hue = mappedHue
+        }
+        // Fallback
+        else {
+            self.hue = 0.58
         }
     }
 
-    var badgeText: String {
-        switch self {
-        case .sky: "平静"
-        case .leaf: "扎根"
-        case .amber: "向前"
-        case .rose: "温暖"
-        case .slate: "沉稳"
-        case .lavender: "灵感"
-        case .coral: "热忱"
-        case .ocean: "深远"
-        }
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(hue)
     }
 }

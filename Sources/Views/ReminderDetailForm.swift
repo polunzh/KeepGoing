@@ -36,35 +36,7 @@ struct ReminderDetailForm: View {
                     Text("配色")
                         .font(.headline)
 
-                    HStack(spacing: 10) {
-                        ForEach(ReminderPalette.allCases) { palette in
-                            Button {
-                                draft.palette = palette
-                            } label: {
-                                ZStack {
-                                    Circle()
-                                        .fill(
-                                            LinearGradient(
-                                                colors: [palette.startColor, palette.endColor],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            )
-                                        )
-                                        .frame(width: 32, height: 32)
-
-                                    if draft.palette == palette {
-                                        Circle()
-                                            .strokeBorder(.white, lineWidth: 2.5)
-                                            .frame(width: 32, height: 32)
-                                        Image(systemName: "checkmark")
-                                            .font(.system(size: 12, weight: .bold))
-                                            .foregroundStyle(.white)
-                                    }
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
+                    ColorGridPicker(selectedHue: $draft.palette)
                 }
             }
 
@@ -82,5 +54,59 @@ struct ReminderDetailForm: View {
         .onChange(of: draft) { _, newValue in
             onSave(newValue)
         }
+    }
+}
+
+// MARK: - 16x16 Color Grid Picker
+
+private struct ColorGridPicker: View {
+    @Binding var selectedHue: ReminderPalette
+
+    private static let columns = 16
+    private static let rows = 16
+    private static let swatchSize: CGFloat = 20
+    private static let spacing: CGFloat = 3
+
+    var body: some View {
+        VStack(spacing: Self.spacing) {
+            ForEach(0..<Self.rows, id: \.self) { row in
+                HStack(spacing: Self.spacing) {
+                    ForEach(0..<Self.columns, id: \.self) { col in
+                        let palette = paletteFor(row: row, col: col)
+                        Button {
+                            selectedHue = palette
+                        } label: {
+                            RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [palette.startColor, palette.endColor],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .frame(width: Self.swatchSize, height: Self.swatchSize)
+                                .overlay {
+                                    if isSelected(palette) {
+                                        RoundedRectangle(cornerRadius: 3, style: .continuous)
+                                            .strokeBorder(.white, lineWidth: 2)
+                                    }
+                                }
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+    }
+
+    private func paletteFor(row: Int, col: Int) -> ReminderPalette {
+        // col = hue (0-15), row = saturation/brightness variation
+        let hue = Double(col) / 16.0
+        let shift = Double(row) * 0.003
+        return ReminderPalette(hue: (hue + shift).truncatingRemainder(dividingBy: 1.0))
+    }
+
+    private func isSelected(_ palette: ReminderPalette) -> Bool {
+        abs(palette.hue - selectedHue.hue) < 0.005
     }
 }
