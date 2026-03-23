@@ -16,11 +16,16 @@
 
 ## Features
 
-- macOS main window: manage and edit reminders
-- macOS menu bar entry: show/hide the floating reminder panel
-- macOS floating panel: always-on-top with day progress visualization and time-of-day color tinting
-- iOS editing: shares the same reminder editing logic as macOS
-- Local persistence: reminders, current selection, and rotation interval are saved locally
+- **Floating panel** — always-on-top compact widget (280x130), the panel itself is a day progress bar
+- **Time awareness** — ticking seconds, day progress percentage, time-of-day color tinting (morning warm / noon neutral / evening amber / night blue)
+- **3 animation effects** — breath glow (heart pulse), progress pulse (boundary glow), particle drift (hourglass sand). User selectable
+- **8 color palettes** — sky, leaf, amber, rose, slate, lavender, coral, ocean
+- **Auto update check** — checks GitHub Releases on launch, prompts to download new versions
+- **Carousel rotation** — auto-cycle through reminders at configurable intervals
+- macOS main window for managing and editing reminders
+- macOS menu bar entry for quick access
+- iOS editing with shared reminder logic
+- Local persistence for all settings
 
 ## Install
 
