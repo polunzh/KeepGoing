@@ -16,10 +16,10 @@
 
 ## Features
 
-- **Floating panel** — always-on-top compact widget (280x130), the panel itself is a day progress bar
+- **Floating panel** — always-on-top widget with two sizes: standard (280x130) and mini (self-adaptive width, single line). The entire panel is a day progress bar
 - **Time awareness** — ticking seconds, day progress percentage, time-of-day color tinting (morning warm / noon neutral / evening amber / night blue)
-- **3 animation effects** — breath glow (heart pulse), progress pulse (boundary glow), particle drift (hourglass sand). User selectable
-- **8 color palettes** — sky, leaf, amber, rose, slate, lavender, coral, ocean
+- **3 animation effects** — breath glow (heart pulse), progress pulse (boundary glow), particle drift (smooth 60fps hourglass sand). User selectable
+- **256 color palettes** — hue-based color system with 16x16 grid picker
 - **Auto update check** — checks GitHub Releases on launch, prompts to download new versions
 - **Carousel rotation** — auto-cycle through reminders at configurable intervals
 - macOS main window for managing and editing reminders
