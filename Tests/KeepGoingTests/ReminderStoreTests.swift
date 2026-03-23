@@ -192,38 +192,59 @@ struct DayProgressTests {
 @Suite("Time-of-Day Tinting")
 struct TimeOfDayTintTests {
 
-    /// Morning (6-10) should return .morning tint.
+    /// Noon (13:00) should return near-zero opacity.
     @Test
-    func tint_morning() {
-        let time = calendar.date(bySettingHour: 8, minute: 0, second: 0, of: .now)!
-        #expect(TimeOfDayTint.period(for: time) == .morning)
+    func tint_noon_clear() {
+        let c = TimeOfDayTint.interpolatedComponents(at: 13.0)
+        #expect(c.opacity < 0.01)
     }
 
-    /// Midday (10-16) should return .midday tint (neutral).
+    /// Night (3:00) should return high opacity with dominant blue.
     @Test
-    func tint_midday() {
-        let time = calendar.date(bySettingHour: 13, minute: 0, second: 0, of: .now)!
-        #expect(TimeOfDayTint.period(for: time) == .midday)
+    func tint_night_blue() {
+        let c = TimeOfDayTint.interpolatedComponents(at: 3.0)
+        #expect(c.opacity > 0.25)
+        #expect(c.b > c.r)
+        #expect(c.b > c.g)
     }
 
-    /// Evening (16-19) should return .evening tint.
+    /// Sunrise (6:15) should return warm tint with high red.
     @Test
-    func tint_evening() {
-        let time = calendar.date(bySettingHour: 17, minute: 0, second: 0, of: .now)!
-        #expect(TimeOfDayTint.period(for: time) == .evening)
+    func tint_sunrise_warm() {
+        let c = TimeOfDayTint.interpolatedComponents(at: 6.25)
+        #expect(c.r > 0.9)
+        #expect(abs(c.opacity - 0.20) < 0.01)
     }
 
-    /// Night (19-6) should return .night tint.
+    /// Sunset (18:00) should return red-dominant tint.
     @Test
-    func tint_night() {
-        let time = calendar.date(bySettingHour: 23, minute: 0, second: 0, of: .now)!
-        #expect(TimeOfDayTint.period(for: time) == .night)
-
-        let earlyMorning = calendar.date(bySettingHour: 4, minute: 0, second: 0, of: .now)!
-        #expect(TimeOfDayTint.period(for: earlyMorning) == .night)
+    func tint_sunset_red() {
+        let c = TimeOfDayTint.interpolatedComponents(at: 18.0)
+        #expect(c.r > 0.9)
+        #expect(c.r > c.g)
+        #expect(c.r > c.b)
+        #expect(abs(c.opacity - 0.24) < 0.01)
     }
 
-    private var calendar: Calendar { Calendar.current }
+    /// Midnight wrap-around (22:00) should interpolate smoothly.
+    @Test
+    func tint_midnight_wraparound() {
+        let c = TimeOfDayTint.interpolatedComponents(at: 22.0)
+        // Between nightfall (20:30, opacity 0.26) and deep night (0:00, opacity 0.28)
+        #expect(c.opacity > 0.20)
+        #expect(c.opacity < 0.35)
+        #expect(c.b > c.r) // Should be blue-ish
+    }
+
+    /// At exactly an anchor time, output should match that anchor's values.
+    @Test
+    func tint_exact_anchor() {
+        let c = TimeOfDayTint.interpolatedComponents(at: 0.0)
+        #expect(abs(c.r - 0.06) < 0.001)
+        #expect(abs(c.g - 0.08) < 0.001)
+        #expect(abs(c.b - 0.30) < 0.001)
+        #expect(abs(c.opacity - 0.28) < 0.001)
+    }
 }
 
 // MARK: - Panel Size Mode

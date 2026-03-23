@@ -17,7 +17,7 @@
 ## Features
 
 - **Floating panel** — always-on-top widget with two sizes: standard (280x130) and mini (self-adaptive width, single line). The entire panel is a day progress bar
-- **Time awareness** — ticking seconds, day progress percentage, time-of-day color tinting (morning warm / noon neutral / evening amber / night blue)
+- **Time awareness** — ticking seconds, day progress percentage, smooth sun-journey color tinting that follows the real clock (dawn purple → sunrise orange → noon clear → sunset red → night blue, 18 anchor points with continuous interpolation)
 - **3 animation effects** — breath glow (heart pulse), progress pulse (boundary glow), particle drift (smooth 60fps hourglass sand). User selectable
 - **256 color palettes** — hue-based color system with 16x16 grid picker
 - **Auto update check** — checks GitHub Releases on launch, prompts to download new versions
