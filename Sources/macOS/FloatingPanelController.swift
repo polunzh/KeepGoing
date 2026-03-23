@@ -278,7 +278,7 @@ struct FloatingReminderPanelView: View {
 
             // Content
             VStack(alignment: .leading, spacing: 0) {
-                // Top row: time with seconds + day progress percentage
+                // Top row: time + day progress
                 HStack(alignment: .center) {
                     Text(currentTime, format: .dateTime.hour().minute().second())
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
@@ -291,38 +291,10 @@ struct FloatingReminderPanelView: View {
 
                     Spacer()
 
-                    if isHovering {
-                        HStack(spacing: 6) {
-                            Button {
-                                store.selectNextReminder()
-                            } label: {
-                                Image(systemName: "forward.fill")
-                                    .font(.system(size: 9, weight: .bold))
-                                    .foregroundStyle(.white)
-                            }
-                            .buttonStyle(.plain)
-                            .frame(width: 22, height: 22)
-                            .background(.white.opacity(0.18), in: Circle())
-                            .accessibilityIdentifier("nextReminderButton")
-
-                            Button {
-                                store.isFloatingPanelVisible = false
-                            } label: {
-                                Image(systemName: "xmark")
-                                    .font(.system(size: 9, weight: .bold))
-                                    .foregroundStyle(.white)
-                            }
-                            .buttonStyle(.plain)
-                            .frame(width: 22, height: 22)
-                            .background(.white.opacity(0.18), in: Circle())
-                        }
-                        .transition(.opacity.combined(with: .scale(scale: 0.8)))
-                    } else {
-                        Text("今天已过 \(DayProgress.percent(for: currentTime))%")
-                            .font(.system(size: 11, weight: .medium, design: .rounded))
-                            .foregroundStyle(.white.opacity(0.5))
-                            .contentTransition(.numericText())
-                    }
+                    Text("今天已过 \(DayProgress.percent(for: currentTime))%")
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.5))
+                        .contentTransition(.numericText())
                 }
 
                 Spacer().frame(height: 10)
@@ -348,6 +320,43 @@ struct FloatingReminderPanelView: View {
             .padding(.horizontal, 14)
             .padding(.top, 10)
             .padding(.bottom, 12)
+
+            // Hover buttons — bottom-right overlay
+            if isHovering {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        HStack(spacing: 6) {
+                            Button {
+                                store.selectNextReminder()
+                            } label: {
+                                Image(systemName: "forward.fill")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+                            .frame(width: 24, height: 24)
+                            .background(.white.opacity(0.2), in: Circle())
+                            .accessibilityIdentifier("nextReminderButton")
+
+                            Button {
+                                store.isFloatingPanelVisible = false
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+                            .frame(width: 24, height: 24)
+                            .background(.white.opacity(0.2), in: Circle())
+                        }
+                    }
+                    .padding(.trailing, 12)
+                    .padding(.bottom, 10)
+                }
+                .transition(.opacity.combined(with: .scale(scale: 0.8)))
+            }
         }
         .frame(width: panelSize.width, height: panelSize.height)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
