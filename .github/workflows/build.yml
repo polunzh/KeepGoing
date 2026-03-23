@@ -1,4 +1,4 @@
-name: Build macOS
+name: Build & Release macOS
 
 on:
   push:
@@ -6,14 +6,40 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install XcodeGen
         run: brew install xcodegen
+
+      - name: Determine version
+        id: version
+        run: |
+          # Get latest tag, default to v0.0.0 if none
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest_tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+
+          # Strip 'v' prefix and bump patch
+          VERSION="${LATEST_TAG#v}"
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "new_tag=v$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $LATEST_TAG → v$NEW_VERSION"
+
+      - name: Update version in project.yml
+        run: |
+          sed -i '' "s/MARKETING_VERSION: .*/MARKETING_VERSION: ${{ steps.version.outputs.new_version }}/" project.yml
+          sed -i '' "s/CURRENT_PROJECT_VERSION: .*/CURRENT_PROJECT_VERSION: ${{ github.run_number }}/" project.yml
 
       - name: Generate Xcode project
         run: xcodegen generate
@@ -38,20 +64,27 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
-      - name: Export app
+      - name: Export app and create DMG
         run: |
           mkdir -p build/app
           cp -R build/KeepGoing.xcarchive/Products/Applications/KeepGoing.app build/app/
-
-      - name: Create DMG
-        run: |
           hdiutil create -volname "KeepGoing" \
             -srcfolder build/app \
             -ov -format UDZO \
-            build/KeepGoing.dmg
+            build/KeepGoing-${{ steps.version.outputs.new_version }}.dmg
 
-      - name: Upload DMG
+      - name: Upload DMG artifact
         uses: actions/upload-artifact@v4
         with:
           name: KeepGoing-macOS
-          path: build/KeepGoing.dmg
+          path: build/KeepGoing-${{ steps.version.outputs.new_version }}.dmg
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          gh release create "${{ steps.version.outputs.new_tag }}" \
+            build/KeepGoing-${{ steps.version.outputs.new_version }}.dmg \
+            --title "KeepGoing ${{ steps.version.outputs.new_tag }}" \
+            --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
