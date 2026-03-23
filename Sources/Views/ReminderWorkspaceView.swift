@@ -63,6 +63,7 @@ struct ReminderWorkspaceView: View {
                 )) {
                     Text("显示悬浮窗")
                 }
+                .toggleStyle(.switch)
 
                 PanelSizeModePicker(mode: $store.panelSizeMode)
                 AnimationStylePicker(style: $store.panelAnimationStyle)
