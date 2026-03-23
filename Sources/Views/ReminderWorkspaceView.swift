@@ -48,13 +48,12 @@ struct ReminderWorkspaceView: View {
                 .buttonStyle(.plain)
             }
 
-            Section("轮播间隔") {
+            Section("轮播") {
                 CycleIntervalPicker(interval: $store.cycleInterval)
+            }
 
-                #if os(macOS)
-                PanelSizeModePicker(mode: $store.panelSizeMode)
-                AnimationStylePicker(style: $store.panelAnimationStyle)
-
+            #if os(macOS)
+            Section("悬浮窗") {
                 Button {
                     store.isFloatingPanelVisible.toggle()
                     FloatingPanelController.shared.syncVisibility()
@@ -64,8 +63,11 @@ struct ReminderWorkspaceView: View {
                         systemImage: store.isFloatingPanelVisible ? "eye.slash" : "eye"
                     )
                 }
-                #endif
+
+                PanelSizeModePicker(mode: $store.panelSizeMode)
+                AnimationStylePicker(style: $store.panelAnimationStyle)
             }
+            #endif
         }
         .navigationTitle("KeepGoing")
         .toolbar {
