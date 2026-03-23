@@ -61,13 +61,19 @@ jobs:
             -archivePath build/KeepGoing.xcarchive \
             -configuration Release \
             CODE_SIGN_IDENTITY="-" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGNING_ALLOWED=YES \
+            ENABLE_HARDENED_RUNTIME=NO
 
       - name: Export app and create DMG
         run: |
           mkdir -p build/app
           cp -R build/KeepGoing.xcarchive/Products/Applications/KeepGoing.app build/app/
+
+          # Re-sign with ad-hoc signature and remove quarantine
+          codesign --force --deep --sign - build/app/KeepGoing.app
+          xattr -cr build/app/KeepGoing.app
+
           hdiutil create -volname "KeepGoing" \
             -srcfolder build/app \
             -ov -format UDZO \

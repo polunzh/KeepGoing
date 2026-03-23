@@ -22,7 +22,17 @@
 - iOS editing: shares the same reminder editing logic as macOS
 - Local persistence: reminders, current selection, and rotation interval are saved locally
 
-## Getting Started
+## Install
+
+Download the latest DMG from [Releases](../../releases/latest). After opening the DMG, drag KeepGoing to Applications.
+
+If macOS blocks the app, run in Terminal:
+
+```bash
+xattr -cr /Applications/KeepGoing.app
+```
+
+## Build from Source
 
 1. Open `KeepGoing.xcodeproj` in Xcode
 2. Select `KeepGoing_macOS` to run on Mac

@@ -18,7 +18,17 @@
 - `iOS` 编辑界面：和 macOS 共享同一套提醒编辑逻辑
 - 本地持久化：提醒内容、当前选中项、轮播间隔会保存在本地
 
-## 运行方式
+## 安装
+
+从 [Releases](../../releases/latest) 下载最新 DMG，打开后将 KeepGoing 拖到 Applications。
+
+如果 macOS 提示无法打开，在终端执行：
+
+```bash
+xattr -cr /Applications/KeepGoing.app
+```
+
+## 从源码构建
 
 1. 用 Xcode 打开 `KeepGoing.xcodeproj`
 2. 选择 `KeepGoing_macOS` 运行到 Mac
