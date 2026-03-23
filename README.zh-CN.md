@@ -1,12 +1,20 @@
-# KeepGoing
+<p align="center">
+  <img src="Screenshots/appicon.png" width="128" height="128" alt="KeepGoing App Icon">
+</p>
 
-一个为当前阶段设计的 `macOS + iOS` 提醒应用。
+<h1 align="center">KeepGoing</h1>
+
+<p align="center">一个为当前阶段设计的 macOS + iOS 提醒应用。</p>
+
+<p align="center">
+  <img src="Screenshots/keepgoing.png" width="800" alt="KeepGoing 截图">
+</p>
 
 ## 已实现
 
 - `macOS` 常规窗口：管理和编辑提醒内容
 - `macOS` 菜单栏入口：可显示、隐藏悬浮提醒窗
-- `macOS` 悬浮提醒窗：常驻最上层，可随时切换下一条提醒
+- `macOS` 悬浮提醒窗：常驻最上层，整体作为日进度条，随时段变化色温
 - `iOS` 编辑界面：和 macOS 共享同一套提醒编辑逻辑
 - 本地持久化：提醒内容、当前选中项、轮播间隔会保存在本地
 
@@ -27,4 +35,4 @@
 - `iCloud / CloudKit` 同步
 - `macOS / iOS Widget`
 - 每日固定时间自动切换提醒
-- 从你的 Obsidian 日记自动导入一句“今日提醒”
+- 从你的 Obsidian 日记自动导入一句"今日提醒"
