@@ -1,0 +1,58 @@
+name: Build macOS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Run tests
+        run: |
+          xcodebuild test \
+            -project KeepGoing.xcodeproj \
+            -scheme KeepGoing_macOS \
+            -destination 'platform=macOS,arch=arm64' \
+            -only-testing:KeepGoingTests \
+            -resultBundlePath TestResults.xcresult
+
+      - name: Build macOS app
+        run: |
+          xcodebuild archive \
+            -project KeepGoing.xcodeproj \
+            -scheme KeepGoing_macOS \
+            -destination 'generic/platform=macOS' \
+            -archivePath build/KeepGoing.xcarchive \
+            -configuration Release \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Export app
+        run: |
+          mkdir -p build/app
+          cp -R build/KeepGoing.xcarchive/Products/Applications/KeepGoing.app build/app/
+
+      - name: Create DMG
+        run: |
+          hdiutil create -volname "KeepGoing" \
+            -srcfolder build/app \
+            -ov -format UDZO \
+            build/KeepGoing.dmg
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeepGoing-macOS
+          path: build/KeepGoing.dmg
