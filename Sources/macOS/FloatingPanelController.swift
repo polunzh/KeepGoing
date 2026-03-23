@@ -238,6 +238,25 @@ struct FloatingReminderPanelView: View {
 final class MacAppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         FloatingPanelController.shared.syncVisibility()
+
+        Task {
+            if let update = await UpdateChecker.checkForUpdate() {
+                showUpdateAlert(version: update.version, url: update.url)
+            }
+        }
+    }
+
+    private func showUpdateAlert(version: String, url: URL) {
+        let alert = NSAlert()
+        alert.messageText = "新版本可用"
+        alert.informativeText = "KeepGoing v\(version) 已发布，是否前往下载？"
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "前往下载")
+        alert.addButton(withTitle: "稍后再说")
+
+        if alert.runModal() == .alertFirstButtonReturn {
+            NSWorkspace.shared.open(url)
+        }
     }
 }
 #endif

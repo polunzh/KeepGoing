@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		09916751DAAA56208DE0BB9B /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062A061E81ABE5A7EDBD845E /* UpdateChecker.swift */; };
 		19ED5D1A1663CE0B327C6C1F /* ReminderCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BE6CBE3BB2114E6E5690FC /* ReminderCardView.swift */; };
 		1BACF17E10F8A8F6D84CB2CC /* ReminderWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B8B7020A9E98838E40C680 /* ReminderWorkspaceView.swift */; };
 		2D525A944587F599E3FFF45D /* ReminderStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99050F048ADAD60C6410FD2 /* ReminderStoreTests.swift */; };
@@ -20,6 +21,7 @@
 		86384E7E196CF607A1C59CCB /* FloatingPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CDE203C82BD6EED808321F /* FloatingPanelController.swift */; };
 		8DA71D5283982E8BC8A2B6EE /* ReminderDetailForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 595C4F49118A902C3D1B3F57 /* ReminderDetailForm.swift */; };
 		8EC28B14FDC7E51294FFE436 /* TimeOfDayTint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F41C5FB5B48CFEAD2E0435 /* TimeOfDayTint.swift */; };
+		8F482C5A77859BDA05BBAEC6 /* UpdateChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 062A061E81ABE5A7EDBD845E /* UpdateChecker.swift */; };
 		9A3A90B1FED391029DB69FEC /* DayProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806E5ACB274A94CE1F652AF /* DayProgress.swift */; };
 		9A4CF2573CC0BF45270CC47C /* ReminderCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BE6CBE3BB2114E6E5690FC /* ReminderCardView.swift */; };
 		A110A9CC46F89A680B56408B /* KeepGoingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5816F0BDDD86E8B68CD55611 /* KeepGoingApp.swift */; };
@@ -49,6 +51,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		062A061E81ABE5A7EDBD845E /* UpdateChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateChecker.swift; sourceTree = "<group>"; };
 		08EC519480E2F3486A31981A /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
 		12F41C5FB5B48CFEAD2E0435 /* TimeOfDayTint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeOfDayTint.swift; sourceTree = "<group>"; };
 		16BDE511748BEFB79FFF61CC /* KeepGoingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeepGoingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -113,6 +116,7 @@
 				08EC519480E2F3486A31981A /* Reminder.swift */,
 				6E26232D7F0918F6A47288E3 /* ReminderStore.swift */,
 				12F41C5FB5B48CFEAD2E0435 /* TimeOfDayTint.swift */,
+				062A061E81ABE5A7EDBD845E /* UpdateChecker.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -306,6 +310,7 @@
 				DD86994DC0F99B9EF4E9F208 /* ReminderStore.swift in Sources */,
 				1BACF17E10F8A8F6D84CB2CC /* ReminderWorkspaceView.swift in Sources */,
 				8EC28B14FDC7E51294FFE436 /* TimeOfDayTint.swift in Sources */,
+				09916751DAAA56208DE0BB9B /* UpdateChecker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,6 +335,7 @@
 				B4543C1F3B22F299449357E6 /* ReminderStore.swift in Sources */,
 				5C868C9FE08801304716445C /* ReminderWorkspaceView.swift in Sources */,
 				363DE6F14FC50B3B598E3F96 /* TimeOfDayTint.swift in Sources */,
+				8F482C5A77859BDA05BBAEC6 /* UpdateChecker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -420,7 +426,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 0.0.1;
+				MARKETING_VERSION = 0.0.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -553,7 +559,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 0.0.1;
+				MARKETING_VERSION = 0.0.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = KeepGoing;

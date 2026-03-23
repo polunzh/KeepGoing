@@ -210,6 +210,34 @@ struct TimeOfDayTintTests {
     private var calendar: Calendar { Calendar.current }
 }
 
+// MARK: - Update Checker
+
+@Suite("Update Checker")
+struct UpdateCheckerTests {
+
+    /// Should detect when a newer version is available.
+    @Test
+    func detectsNewerVersion() {
+        #expect(UpdateChecker.isNewer("0.0.5", than: "0.0.4") == true)
+        #expect(UpdateChecker.isNewer("0.1.0", than: "0.0.9") == true)
+        #expect(UpdateChecker.isNewer("1.0.0", than: "0.9.9") == true)
+    }
+
+    /// Should not flag same or older versions.
+    @Test
+    func ignoresSameOrOlderVersion() {
+        #expect(UpdateChecker.isNewer("0.0.4", than: "0.0.4") == false)
+        #expect(UpdateChecker.isNewer("0.0.3", than: "0.0.4") == false)
+    }
+
+    /// Should parse GitHub release tag name to version string.
+    @Test
+    func parsesTagName() {
+        #expect(UpdateChecker.versionFromTag("v0.0.5") == "0.0.5")
+        #expect(UpdateChecker.versionFromTag("0.0.5") == "0.0.5")
+    }
+}
+
 // MARK: - Helpers
 
 extension UserDefaults {

@@ -67,15 +67,18 @@ jobs:
 
       - name: Export app and create DMG
         run: |
-          mkdir -p build/app
-          cp -R build/KeepGoing.xcarchive/Products/Applications/KeepGoing.app build/app/
+          mkdir -p build/dmg-contents
+          cp -R build/KeepGoing.xcarchive/Products/Applications/KeepGoing.app build/dmg-contents/
 
           # Re-sign with ad-hoc signature and remove quarantine
-          codesign --force --deep --sign - build/app/KeepGoing.app
-          xattr -cr build/app/KeepGoing.app
+          codesign --force --deep --sign - build/dmg-contents/KeepGoing.app
+          xattr -cr build/dmg-contents/KeepGoing.app
+
+          # Add Applications folder shortcut for drag-to-install
+          ln -s /Applications build/dmg-contents/Applications
 
           hdiutil create -volname "KeepGoing" \
-            -srcfolder build/app \
+            -srcfolder build/dmg-contents \
             -ov -format UDZO \
             build/KeepGoing-${{ steps.version.outputs.new_version }}.dmg
 
