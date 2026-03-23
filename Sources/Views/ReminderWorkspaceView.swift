@@ -54,14 +54,14 @@ struct ReminderWorkspaceView: View {
 
             #if os(macOS)
             Section("悬浮窗") {
-                Button {
-                    store.isFloatingPanelVisible.toggle()
-                    FloatingPanelController.shared.syncVisibility()
-                } label: {
-                    Label(
-                        store.isFloatingPanelVisible ? "隐藏悬浮窗" : "显示悬浮窗",
-                        systemImage: store.isFloatingPanelVisible ? "eye.slash" : "eye"
-                    )
+                Toggle(isOn: Binding(
+                    get: { store.isFloatingPanelVisible },
+                    set: { newValue in
+                        store.isFloatingPanelVisible = newValue
+                        FloatingPanelController.shared.syncVisibility()
+                    }
+                )) {
+                    Text("显示悬浮窗")
                 }
 
                 PanelSizeModePicker(mode: $store.panelSizeMode)
@@ -122,47 +122,13 @@ private struct CycleIntervalPicker: View {
         ("每天", 86400),
     ]
 
-    private var currentLabel: String {
-        Self.presets.first { $0.1 == interval }?.0 ?? formatCustom(interval)
-    }
-
     var body: some View {
-        Menu {
+        Picker("间隔", selection: $interval) {
             ForEach(Self.presets, id: \.1) { label, value in
-                Button {
-                    interval = value
-                } label: {
-                    if interval == value {
-                        Label(label, systemImage: "checkmark")
-                    } else {
-                        Text(label)
-                    }
-                }
+                Text(label).tag(value)
             }
-        } label: {
-            HStack(spacing: 4) {
-                Text(currentLabel)
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption2)
-            }
-            .font(.subheadline)
-            .foregroundStyle(.primary)
         }
-        .menuStyle(.borderlessButton)
-        .fixedSize()
-    }
-
-    private func formatCustom(_ seconds: Double) -> String {
-        let minutes = Int(seconds / 60)
-        if minutes < 60 {
-            return "\(minutes) 分钟"
-        }
-        let hours = minutes / 60
-        let remainingMinutes = minutes % 60
-        if remainingMinutes == 0 {
-            return "\(hours) 小时"
-        }
-        return "\(hours) 小时 \(remainingMinutes) 分"
+        .pickerStyle(.menu)
     }
 }
 
@@ -172,29 +138,12 @@ private struct PanelSizeModePicker: View {
     @Binding var mode: PanelSizeMode
 
     var body: some View {
-        Menu {
+        Picker("尺寸", selection: $mode) {
             ForEach(PanelSizeMode.allCases) { option in
-                Button {
-                    mode = option
-                } label: {
-                    if mode == option {
-                        Label(option.label, systemImage: "checkmark")
-                    } else {
-                        Text(option.label)
-                    }
-                }
+                Text(option.label).tag(option)
             }
-        } label: {
-            HStack(spacing: 4) {
-                Text("悬浮窗: \(mode.label)")
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption2)
-            }
-            .font(.subheadline)
-            .foregroundStyle(.primary)
         }
-        .menuStyle(.borderlessButton)
-        .fixedSize()
+        .pickerStyle(.menu)
     }
 }
 
@@ -204,29 +153,12 @@ private struct AnimationStylePicker: View {
     @Binding var style: PanelAnimationStyle
 
     var body: some View {
-        Menu {
+        Picker("动画", selection: $style) {
             ForEach(PanelAnimationStyle.allCases) { option in
-                Button {
-                    style = option
-                } label: {
-                    if style == option {
-                        Label(option.label, systemImage: "checkmark")
-                    } else {
-                        Text(option.label)
-                    }
-                }
+                Text(option.label).tag(option)
             }
-        } label: {
-            HStack(spacing: 4) {
-                Text(style.label)
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption2)
-            }
-            .font(.subheadline)
-            .foregroundStyle(.primary)
         }
-        .menuStyle(.borderlessButton)
-        .fixedSize()
+        .pickerStyle(.menu)
     }
 }
 
