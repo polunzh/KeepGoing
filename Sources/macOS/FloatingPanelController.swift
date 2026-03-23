@@ -135,38 +135,25 @@ struct FloatingReminderPanelView: View {
         let progress = DayProgress.fraction(for: currentTime)
 
         return ZStack {
-            // Dimmed background (the "remaining" portion)
+            // Full bright gradient as base
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [
-                            reminder.palette.startColor.opacity(0.3),
-                            reminder.palette.endColor.opacity(0.3),
-                        ],
+                        colors: [reminder.palette.startColor, reminder.palette.endColor],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
 
-            // Bright gradient clipped to elapsed portion — the card IS the progress bar
+            // Dim overlay for the "remaining" portion — clips from the right,
+            // respecting the same rounded rectangle shape
             GeometryReader { geo in
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(
-                        LinearGradient(
-                            colors: [reminder.palette.startColor, reminder.palette.endColor],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: geo.size.width)
-                    .mask(
-                        HStack(spacing: 0) {
-                            Rectangle()
-                                .frame(width: geo.size.width * progress)
-                            Spacer(minLength: 0)
-                        }
-                    )
+                Rectangle()
+                    .fill(Color.black.opacity(0.45))
+                    .frame(width: geo.size.width * (1 - progress))
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
 
             // Time-of-day tint overlay
             RoundedRectangle(cornerRadius: 16, style: .continuous)
@@ -244,7 +231,6 @@ struct FloatingReminderPanelView: View {
         }
         .frame(width: Self.panelWidth, height: Self.panelHeight)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
     }
 }
 
