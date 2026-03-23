@@ -34,12 +34,17 @@ final class ReminderStore: ObservableObject {
         didSet { saveState() }
     }
 
+    @Published var panelSizeMode: PanelSizeMode {
+        didSet { saveState() }
+    }
+
     private struct PersistedState: Codable {
         var reminders: [Reminder]
         var selectedReminderID: Reminder.ID?
         var isFloatingPanelVisible: Bool
         var cycleInterval: Double
         var panelAnimationStyle: PanelAnimationStyle?
+        var panelSizeMode: PanelSizeMode?
     }
 
     private let defaultsKey = "keepGoing.persisted.state"
@@ -113,6 +118,7 @@ final class ReminderStore: ObservableObject {
         isFloatingPanelVisible = initialState.isFloatingPanelVisible
         cycleInterval = initialState.cycleInterval
         panelAnimationStyle = initialState.panelAnimationStyle ?? .pulse
+        panelSizeMode = initialState.panelSizeMode ?? .standard
 
         stampSelection()
         restartTimer()
@@ -233,7 +239,8 @@ final class ReminderStore: ObservableObject {
             selectedReminderID: selectedReminderID,
             isFloatingPanelVisible: isFloatingPanelVisible,
             cycleInterval: cycleInterval,
-            panelAnimationStyle: panelAnimationStyle
+            panelAnimationStyle: panelAnimationStyle,
+            panelSizeMode: panelSizeMode
         )
 
         guard let data = try? JSONEncoder().encode(state) else { return }

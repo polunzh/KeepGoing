@@ -43,6 +43,13 @@ final class FloatingPanelController: NSWindowController {
             }
             .store(in: &cancellables)
 
+        store.$panelSizeMode
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.syncPanelSize()
+            }
+            .store(in: &cancellables)
+
         NotificationCenter.default.publisher(for: NSApplication.didChangeScreenParametersNotification)
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
@@ -86,14 +93,26 @@ final class FloatingPanelController: NSWindowController {
         panel.setFrameOrigin(clampedOrigin)
     }
 
-    private static let panelWidth: CGFloat = 280
-    private static let panelHeight: CGFloat = 130
+    private func syncPanelSize() {
+        guard let panel = window else { return }
+        let size = Self.panelSize(for: store.panelSizeMode)
+        let origin = panel.frame.origin
+        panel.setFrame(NSRect(x: origin.x, y: origin.y, width: size.width, height: size.height), display: true, animate: true)
+    }
+
+    static func panelSize(for mode: PanelSizeMode) -> NSSize {
+        switch mode {
+        case .standard: NSSize(width: 280, height: 130)
+        case .compact: NSSize(width: 180, height: 60)
+        }
+    }
 
     private static func defaultOrigin(for panel: NSPanel) -> NSPoint {
         let visibleFrame = NSScreen.main?.visibleFrame ?? .zero
+        let size = panelSize(for: .standard)
         return NSPoint(
-            x: visibleFrame.maxX - panelWidth - 24,
-            y: visibleFrame.maxY - panelHeight - 24
+            x: visibleFrame.maxX - size.width - 24,
+            y: visibleFrame.maxY - size.height - 24
         )
     }
 }
@@ -106,21 +125,28 @@ struct FloatingReminderPanelView: View {
     @State private var currentTime = Date.now
     @State private var animationTick = false
 
-    private static let panelWidth: CGFloat = 280
-    private static let panelHeight: CGFloat = 130
-
     private let clockTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+
+    private var panelSize: NSSize {
+        FloatingPanelController.panelSize(for: store.panelSizeMode)
+    }
+
+    private var isCompact: Bool { store.panelSizeMode == .compact }
 
     var body: some View {
         Group {
             if let reminder = store.floatingPanelReminder {
-                panelContent(reminder: reminder)
+                if isCompact {
+                    compactContent(reminder: reminder)
+                } else {
+                    panelContent(reminder: reminder)
+                }
             } else {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: isCompact ? 12 : 16, style: .continuous)
                     .fill(.ultraThinMaterial)
             }
         }
-        .frame(width: Self.panelWidth, height: Self.panelHeight)
+        .frame(width: panelSize.width, height: panelSize.height)
         .background(Color.clear)
         .onReceive(clockTimer) { time in
             currentTime = time
@@ -133,6 +159,82 @@ struct FloatingReminderPanelView: View {
                 isHovering = hovering
             }
         }
+    }
+
+    private func compactContent(reminder: Reminder) -> some View {
+        let progress = DayProgress.fraction(for: currentTime)
+
+        return ZStack {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [reminder.palette.startColor, reminder.palette.endColor],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            GeometryReader { geo in
+                Rectangle()
+                    .fill(Color.black.opacity(0.45))
+                    .frame(width: geo.size.width * (1 - progress))
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(TimeOfDayTint.tintColor(for: currentTime))
+
+            animationLayer(progress: progress)
+
+            HStack(spacing: 8) {
+                Text(currentTime, format: .dateTime.hour().minute().second())
+                    .font(.system(size: 10, weight: .medium, design: .monospaced))
+                    .foregroundStyle(.white.opacity(isBreathGlowActive ? 1.0 : 0.5))
+                    .monospacedDigit()
+                    .contentTransition(.numericText())
+                    .shadow(color: .white.opacity(isBreathGlowActive ? 0.9 : 0), radius: isBreathGlowActive ? 8 : 0)
+
+                Text(reminder.title)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .accessibilityIdentifier("floatingPanelTitle")
+
+                Spacer(minLength: 0)
+
+                if isHovering {
+                    HStack(spacing: 4) {
+                        Button {
+                            store.selectNextReminder()
+                        } label: {
+                            Image(systemName: "forward.fill")
+                                .font(.system(size: 8, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(width: 18, height: 18)
+                        .background(.white.opacity(0.18), in: Circle())
+                        .accessibilityIdentifier("nextReminderButton")
+
+                        Button {
+                            store.isFloatingPanelVisible = false
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 8, weight: .bold))
+                                .foregroundStyle(.white)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(width: 18, height: 18)
+                        .background(.white.opacity(0.18), in: Circle())
+                    }
+                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                }
+            }
+            .padding(.horizontal, 10)
+        }
+        .frame(width: panelSize.width, height: panelSize.height)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     private func panelContent(reminder: Reminder) -> some View {
@@ -239,7 +341,7 @@ struct FloatingReminderPanelView: View {
             .padding(.top, 10)
             .padding(.bottom, 12)
         }
-        .frame(width: Self.panelWidth, height: Self.panelHeight)
+        .frame(width: panelSize.width, height: panelSize.height)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 

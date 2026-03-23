@@ -52,6 +52,7 @@ struct ReminderWorkspaceView: View {
                 CycleIntervalPicker(interval: $store.cycleInterval)
 
                 #if os(macOS)
+                PanelSizeModePicker(mode: $store.panelSizeMode)
                 AnimationStylePicker(style: $store.panelAnimationStyle)
 
                 Button {
@@ -160,6 +161,38 @@ private struct CycleIntervalPicker: View {
             return "\(hours) 小时"
         }
         return "\(hours) 小时 \(remainingMinutes) 分"
+    }
+}
+
+// MARK: - Panel Size Mode Picker
+
+private struct PanelSizeModePicker: View {
+    @Binding var mode: PanelSizeMode
+
+    var body: some View {
+        Menu {
+            ForEach(PanelSizeMode.allCases) { option in
+                Button {
+                    mode = option
+                } label: {
+                    if mode == option {
+                        Label(option.label, systemImage: "checkmark")
+                    } else {
+                        Text(option.label)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text("悬浮窗: \(mode.label)")
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2)
+            }
+            .font(.subheadline)
+            .foregroundStyle(.primary)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
     }
 }
 

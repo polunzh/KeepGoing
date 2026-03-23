@@ -210,6 +210,36 @@ struct TimeOfDayTintTests {
     private var calendar: Calendar { Calendar.current }
 }
 
+// MARK: - Panel Size Mode
+
+@Suite("Panel Size Mode")
+struct PanelSizeModeTests {
+
+    /// Should have exactly 2 size modes.
+    @Test
+    func hasTwoModes() {
+        #expect(PanelSizeMode.allCases.count == 2)
+    }
+
+    /// Default should be .standard.
+    @Test @MainActor
+    func defaultIsStandard() {
+        let store = ReminderStore(userDefaults: .ephemeral())
+        #expect(store.panelSizeMode == .standard)
+    }
+
+    /// Should persist.
+    @Test @MainActor
+    func persists() {
+        let defaults = UserDefaults.ephemeral()
+        let store = ReminderStore(userDefaults: defaults)
+        store.panelSizeMode = .compact
+
+        let store2 = ReminderStore(userDefaults: defaults)
+        #expect(store2.panelSizeMode == .compact)
+    }
+}
+
 // MARK: - Animation Style
 
 @Suite("Animation Style")
