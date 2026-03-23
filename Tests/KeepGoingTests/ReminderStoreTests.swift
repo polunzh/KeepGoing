@@ -210,6 +210,44 @@ struct TimeOfDayTintTests {
     private var calendar: Calendar { Calendar.current }
 }
 
+// MARK: - Animation Style
+
+@Suite("Animation Style")
+struct AnimationStyleTests {
+
+    /// Should have exactly 3 animation options.
+    @Test
+    func hasThreeOptions() {
+        #expect(PanelAnimationStyle.allCases.count == 3)
+    }
+
+    /// Default animation style should be .pulse (进度脉搏).
+    @Test @MainActor
+    func defaultIsPulse() {
+        let store = ReminderStore(userDefaults: .ephemeral())
+        #expect(store.panelAnimationStyle == .pulse)
+    }
+
+    /// Animation style should persist across store instances.
+    @Test @MainActor
+    func persists() {
+        let defaults = UserDefaults.ephemeral()
+        let store = ReminderStore(userDefaults: defaults)
+        store.panelAnimationStyle = .particle
+
+        let store2 = ReminderStore(userDefaults: defaults)
+        #expect(store2.panelAnimationStyle == .particle)
+    }
+
+    /// Each style should have a display label.
+    @Test
+    func allHaveLabels() {
+        for style in PanelAnimationStyle.allCases {
+            #expect(!style.label.isEmpty)
+        }
+    }
+}
+
 // MARK: - Update Checker
 
 @Suite("Update Checker")

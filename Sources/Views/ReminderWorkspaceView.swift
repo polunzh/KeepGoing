@@ -52,6 +52,8 @@ struct ReminderWorkspaceView: View {
                 CycleIntervalPicker(interval: $store.cycleInterval)
 
                 #if os(macOS)
+                AnimationStylePicker(style: $store.panelAnimationStyle)
+
                 Button {
                     store.isFloatingPanelVisible.toggle()
                     FloatingPanelController.shared.syncVisibility()
@@ -158,6 +160,38 @@ private struct CycleIntervalPicker: View {
             return "\(hours) 小时"
         }
         return "\(hours) 小时 \(remainingMinutes) 分"
+    }
+}
+
+// MARK: - Animation Style Picker
+
+private struct AnimationStylePicker: View {
+    @Binding var style: PanelAnimationStyle
+
+    var body: some View {
+        Menu {
+            ForEach(PanelAnimationStyle.allCases) { option in
+                Button {
+                    style = option
+                } label: {
+                    if style == option {
+                        Label(option.label, systemImage: "checkmark")
+                    } else {
+                        Text(option.label)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text(style.label)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2)
+            }
+            .font(.subheadline)
+            .foregroundStyle(.primary)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
     }
 }
 

@@ -104,6 +104,7 @@ struct FloatingReminderPanelView: View {
     @ObservedObject var store: ReminderStore
     @State private var isHovering = false
     @State private var currentTime = Date.now
+    @State private var animationTick = false
 
     private static let panelWidth: CGFloat = 280
     private static let panelHeight: CGFloat = 130
@@ -123,6 +124,9 @@ struct FloatingReminderPanelView: View {
         .background(Color.clear)
         .onReceive(clockTimer) { time in
             currentTime = time
+            withAnimation(.easeInOut(duration: 0.8)) {
+                animationTick.toggle()
+            }
         }
         .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.2)) {
@@ -159,15 +163,19 @@ struct FloatingReminderPanelView: View {
             RoundedRectangle(cornerRadius: 16, style: .continuous)
                 .fill(TimeOfDayTint.tintColor(for: currentTime))
 
+            // Animation overlay
+            animationLayer(progress: progress)
+
             // Content
             VStack(alignment: .leading, spacing: 0) {
                 // Top row: time with seconds + day progress percentage
                 HStack(alignment: .center) {
                     Text(currentTime, format: .dateTime.hour().minute().second())
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.white.opacity(animationTick && store.panelAnimationStyle == .breathGlow ? 1.0 : 0.7))
                         .monospacedDigit()
                         .contentTransition(.numericText())
+                        .shadow(color: .white.opacity(animationTick && store.panelAnimationStyle == .breathGlow ? 0.6 : 0), radius: 8)
 
                     Spacer()
 
@@ -231,6 +239,52 @@ struct FloatingReminderPanelView: View {
         }
         .frame(width: Self.panelWidth, height: Self.panelHeight)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+    }
+
+    @ViewBuilder
+    private func animationLayer(progress: Double) -> some View {
+        switch store.panelAnimationStyle {
+        case .breathGlow:
+            EmptyView() // Handled via text shadow/opacity above
+
+        case .pulse:
+            // Pulsing glow at the progress boundary
+            GeometryReader { geo in
+                let x = geo.size.width * progress
+                Rectangle()
+                    .fill(
+                        LinearGradient(
+                            stops: [
+                                .init(color: .clear, location: 0),
+                                .init(color: .white.opacity(animationTick ? 0.25 : 0.05), location: 0.5),
+                                .init(color: .clear, location: 1),
+                            ],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .frame(width: 40)
+                    .position(x: x, y: geo.size.height / 2)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .allowsHitTesting(false)
+
+        case .particle:
+            // A small glowing dot that drifts across the boundary each second
+            GeometryReader { geo in
+                let x = geo.size.width * progress
+                Circle()
+                    .fill(.white.opacity(0.7))
+                    .frame(width: 4, height: 4)
+                    .shadow(color: .white.opacity(0.8), radius: 6)
+                    .position(
+                        x: x + (animationTick ? 8 : -8),
+                        y: geo.size.height * (animationTick ? 0.3 : 0.7)
+                    )
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .allowsHitTesting(false)
+        }
     }
 }
 
