@@ -105,7 +105,6 @@ struct FloatingReminderPanelView: View {
     @State private var isHovering = false
     @State private var currentTime = Date.now
     @State private var animationTick = false
-    @State private var particlePhase: Double = 0
 
     private static let panelWidth: CGFloat = 280
     private static let panelHeight: CGFloat = 130
@@ -125,7 +124,6 @@ struct FloatingReminderPanelView: View {
         .background(Color.clear)
         .onReceive(clockTimer) { time in
             currentTime = time
-            particlePhase += 1
             withAnimation(.easeInOut(duration: 0.8)) {
                 animationTick.toggle()
             }
@@ -253,10 +251,17 @@ struct FloatingReminderPanelView: View {
     private func animationLayer(progress: Double) -> some View {
         switch store.panelAnimationStyle {
         case .breathGlow:
-            // Whole-card subtle brightness pulse
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(.white.opacity(animationTick ? 0.08 : 0))
-                .allowsHitTesting(false)
+            // Heart shape that pulses like a heartbeat
+            GeometryReader { geo in
+                HeartShape()
+                    .fill(.white.opacity(animationTick ? 0.15 : 0.03))
+                    .shadow(color: .white.opacity(animationTick ? 0.4 : 0), radius: animationTick ? 16 : 0)
+                    .frame(width: 50, height: 45)
+                    .scaleEffect(animationTick ? 1.15 : 0.9)
+                    .position(x: geo.size.width - 30, y: geo.size.height - 25)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .allowsHitTesting(false)
 
         case .pulse:
             // Pulsing glow at the progress boundary
@@ -281,35 +286,66 @@ struct FloatingReminderPanelView: View {
             .allowsHitTesting(false)
 
         case .particle:
-            // Multiple particles drifting down like hourglass sand
-            GeometryReader { geo in
-                let x = geo.size.width * progress
-                ForEach(0..<6, id: \.self) { i in
-                    let seed = Double(i)
-                    // Each particle has a unique phase offset using sine waves
-                    let phase = (particlePhase + seed * 1.7).truncatingRemainder(dividingBy: 6.0)
-                    let normalizedPhase = phase / 6.0
-                    // Vertical: falls from top to bottom
-                    let y = geo.size.height * normalizedPhase
-                    // Horizontal: slight sine drift around the boundary
-                    let drift = sin((particlePhase + seed * 2.3) * 0.8) * 12
-                    let size = 2.5 + sin(seed * 1.3) * 1.5
-                    // Fade in at top, fade out at bottom
-                    let fadeProgress = normalizedPhase
-                    let opacity = fadeProgress < 0.15
-                        ? fadeProgress / 0.15
-                        : fadeProgress > 0.85 ? (1 - fadeProgress) / 0.15 : 1.0
+            // Smooth 60fps particles drifting down like hourglass sand
+            TimelineView(.animation) { timeline in
+                let t = timeline.date.timeIntervalSinceReferenceDate
+                GeometryReader { geo in
+                    let x = geo.size.width * progress
+                    ForEach(0..<7, id: \.self) { i in
+                        let seed = Double(i)
+                        // Each particle loops over its own period (3-5 seconds)
+                        let period = 3.0 + seed * 0.3
+                        let phase = (t / period + seed * 0.37).truncatingRemainder(dividingBy: 1.0)
+                        // Vertical: smooth fall from top to bottom
+                        let y = geo.size.height * phase
+                        // Horizontal: gentle sine drift
+                        let drift = sin(t * 0.7 + seed * 2.1) * 14
+                        let size = 2.0 + sin(seed * 1.7) * 1.5
+                        // Fade in/out at edges
+                        let opacity = phase < 0.1
+                            ? phase / 0.1
+                            : phase > 0.85 ? (1 - phase) / 0.15 : 1.0
 
-                    Circle()
-                        .fill(.white.opacity(0.8 * opacity))
-                        .frame(width: size, height: size)
-                        .shadow(color: .white.opacity(0.6 * opacity), radius: 4)
-                        .position(x: x + drift, y: y)
+                        Circle()
+                            .fill(.white.opacity(0.75 * opacity))
+                            .frame(width: size, height: size)
+                            .shadow(color: .white.opacity(0.5 * opacity), radius: 5)
+                            .position(x: x + drift, y: y)
+                    }
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .allowsHitTesting(false)
         }
+    }
+}
+
+// MARK: - Heart Shape
+
+private struct HeartShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let w = rect.width
+        let h = rect.height
+
+        path.move(to: CGPoint(x: w * 0.5, y: h * 0.25))
+
+        // Left curve
+        path.addCurve(
+            to: CGPoint(x: w * 0.5, y: h * 0.95),
+            control1: CGPoint(x: w * -0.1, y: h * -0.2),
+            control2: CGPoint(x: w * 0.0, y: h * 0.7)
+        )
+
+        // Right curve
+        path.addCurve(
+            to: CGPoint(x: w * 0.5, y: h * 0.25),
+            control1: CGPoint(x: w * 1.0, y: h * 0.7),
+            control2: CGPoint(x: w * 1.1, y: h * -0.2)
+        )
+
+        path.closeSubpath()
+        return path
     }
 }
 
