@@ -105,6 +105,7 @@ struct FloatingReminderPanelView: View {
     @State private var isHovering = false
     @State private var currentTime = Date.now
     @State private var animationTick = false
+    @State private var particlePhase: Double = 0
 
     private static let panelWidth: CGFloat = 280
     private static let panelHeight: CGFloat = 130
@@ -124,6 +125,7 @@ struct FloatingReminderPanelView: View {
         .background(Color.clear)
         .onReceive(clockTimer) { time in
             currentTime = time
+            particlePhase += 1
             withAnimation(.easeInOut(duration: 0.8)) {
                 animationTick.toggle()
             }
@@ -172,10 +174,12 @@ struct FloatingReminderPanelView: View {
                 HStack(alignment: .center) {
                     Text(currentTime, format: .dateTime.hour().minute().second())
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
-                        .foregroundStyle(.white.opacity(animationTick && store.panelAnimationStyle == .breathGlow ? 1.0 : 0.7))
+                        .foregroundStyle(.white.opacity(isBreathGlowActive ? 1.0 : 0.5))
                         .monospacedDigit()
                         .contentTransition(.numericText())
-                        .shadow(color: .white.opacity(animationTick && store.panelAnimationStyle == .breathGlow ? 0.6 : 0), radius: 8)
+                        .shadow(color: .white.opacity(isBreathGlowActive ? 0.9 : 0), radius: isBreathGlowActive ? 12 : 0)
+                        .shadow(color: .white.opacity(isBreathGlowActive ? 0.5 : 0), radius: isBreathGlowActive ? 20 : 0)
+                        .scaleEffect(isBreathGlowActive ? 1.05 : 1.0)
 
                     Spacer()
 
@@ -241,11 +245,18 @@ struct FloatingReminderPanelView: View {
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
+    private var isBreathGlowActive: Bool {
+        animationTick && store.panelAnimationStyle == .breathGlow
+    }
+
     @ViewBuilder
     private func animationLayer(progress: Double) -> some View {
         switch store.panelAnimationStyle {
         case .breathGlow:
-            EmptyView() // Handled via text shadow/opacity above
+            // Whole-card subtle brightness pulse
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.white.opacity(animationTick ? 0.08 : 0))
+                .allowsHitTesting(false)
 
         case .pulse:
             // Pulsing glow at the progress boundary
@@ -253,34 +264,48 @@ struct FloatingReminderPanelView: View {
                 let x = geo.size.width * progress
                 Rectangle()
                     .fill(
-                        LinearGradient(
-                            stops: [
-                                .init(color: .clear, location: 0),
-                                .init(color: .white.opacity(animationTick ? 0.25 : 0.05), location: 0.5),
-                                .init(color: .clear, location: 1),
+                        RadialGradient(
+                            colors: [
+                                .white.opacity(animationTick ? 0.35 : 0.05),
+                                .clear,
                             ],
-                            startPoint: .leading,
-                            endPoint: .trailing
+                            center: .center,
+                            startRadius: 0,
+                            endRadius: 40
                         )
                     )
-                    .frame(width: 40)
+                    .frame(width: 80, height: geo.size.height)
                     .position(x: x, y: geo.size.height / 2)
             }
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .allowsHitTesting(false)
 
         case .particle:
-            // A small glowing dot that drifts across the boundary each second
+            // Multiple particles drifting down like hourglass sand
             GeometryReader { geo in
                 let x = geo.size.width * progress
-                Circle()
-                    .fill(.white.opacity(0.7))
-                    .frame(width: 4, height: 4)
-                    .shadow(color: .white.opacity(0.8), radius: 6)
-                    .position(
-                        x: x + (animationTick ? 8 : -8),
-                        y: geo.size.height * (animationTick ? 0.3 : 0.7)
-                    )
+                ForEach(0..<6, id: \.self) { i in
+                    let seed = Double(i)
+                    // Each particle has a unique phase offset using sine waves
+                    let phase = (particlePhase + seed * 1.7).truncatingRemainder(dividingBy: 6.0)
+                    let normalizedPhase = phase / 6.0
+                    // Vertical: falls from top to bottom
+                    let y = geo.size.height * normalizedPhase
+                    // Horizontal: slight sine drift around the boundary
+                    let drift = sin((particlePhase + seed * 2.3) * 0.8) * 12
+                    let size = 2.5 + sin(seed * 1.3) * 1.5
+                    // Fade in at top, fade out at bottom
+                    let fadeProgress = normalizedPhase
+                    let opacity = fadeProgress < 0.15
+                        ? fadeProgress / 0.15
+                        : fadeProgress > 0.85 ? (1 - fadeProgress) / 0.15 : 1.0
+
+                    Circle()
+                        .fill(.white.opacity(0.8 * opacity))
+                        .frame(width: size, height: size)
+                        .shadow(color: .white.opacity(0.6 * opacity), radius: 4)
+                        .position(x: x + drift, y: y)
+                }
             }
             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             .allowsHitTesting(false)
