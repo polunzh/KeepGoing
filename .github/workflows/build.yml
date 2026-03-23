@@ -22,9 +22,8 @@ jobs:
         run: |
           xcodebuild test \
             -project KeepGoing.xcodeproj \
-            -scheme KeepGoing_macOS \
+            -scheme KeepGoingTests \
             -destination 'platform=macOS,arch=arm64' \
-            -only-testing:KeepGoingTests \
             -resultBundlePath TestResults.xcresult
 
       - name: Build macOS app
