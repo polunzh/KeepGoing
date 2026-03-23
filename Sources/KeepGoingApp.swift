@@ -12,7 +12,7 @@ struct KeepGoingApp: App {
         WindowGroup(id: "editor") {
             ReminderWorkspaceView(store: store)
         }
-        .defaultSize(width: 1100, height: 860)
+        .defaultSize(width: 780, height: 600)
 
         #if os(macOS)
         MenuBarExtra("KeepGoing", systemImage: "sun.max.circle.fill") {

@@ -2,16 +2,10 @@ import SwiftUI
 
 struct ReminderCardView: View {
     let reminder: Reminder
-    let compact: Bool
-
-    init(reminder: Reminder, compact: Bool = false) {
-        self.reminder = reminder
-        self.compact = compact
-    }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: compact ? 24 : 28, style: .continuous)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [reminder.palette.startColor, reminder.palette.endColor],
@@ -20,9 +14,9 @@ struct ReminderCardView: View {
                     )
                 )
 
-            VStack(alignment: .leading, spacing: compact ? 12 : 16) {
+            VStack(alignment: .leading, spacing: 14) {
                 HStack(alignment: .top) {
-                    Text(reminder.palette.badgeText.uppercased())
+                    Text(reminder.palette.badgeText)
                         .font(.caption.weight(.semibold))
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
@@ -36,27 +30,23 @@ struct ReminderCardView: View {
                 }
 
                 Text(reminder.title)
-                    .font(compact ? .title3.weight(.bold) : .largeTitle.weight(.bold))
+                    .font(.title2.weight(.bold))
                     .foregroundStyle(.white)
-                    .lineLimit(compact ? 2 : 3)
+                    .lineLimit(2)
 
                 Text(reminder.message)
-                    .font(compact ? .body.weight(.medium) : .title3.weight(.medium))
+                    .font(.body.weight(.medium))
                     .foregroundStyle(.white.opacity(0.96))
-                    .lineSpacing(compact ? 3 : 4)
+                    .lineSpacing(3)
                     .fixedSize(horizontal: false, vertical: true)
 
-                Spacer(minLength: compact ? 6 : 10)
-
-                Text("KeepGoing")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.white.opacity(0.8))
+                Spacer(minLength: 6)
             }
-            .padding(compact ? 20 : 24)
+            .padding(20)
         }
+        .foregroundStyle(.white)
         .frame(maxWidth: .infinity)
-        .frame(height: compact ? 220 : 260)
-        .shadow(color: .black.opacity(0.12), radius: compact ? 10 : 18, y: 12)
+        .shadow(color: .black.opacity(0.1), radius: 12, y: 8)
     }
 }
 

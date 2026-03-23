@@ -12,17 +12,18 @@ final class FloatingPanelController: NSWindowController {
 
     private init() {
         let controller = NSHostingController(rootView: FloatingReminderPanelView(store: ReminderStore.shared))
+        controller.view.wantsLayer = true
+        controller.view.layer?.backgroundColor = .clear
 
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 360, height: 260),
-            styleMask: [.titled, .nonactivatingPanel, .fullSizeContentView],
+            contentRect: NSRect(x: 0, y: 0, width: 280, height: 130),
+            styleMask: [.borderless, .nonactivatingPanel, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
 
-        panel.titleVisibility = .hidden
-        panel.titlebarAppearsTransparent = true
         panel.isFloatingPanel = true
+        panel.becomesKeyOnlyIfNeeded = true
         panel.level = .statusBar
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
         panel.isMovableByWindowBackground = true
@@ -30,9 +31,7 @@ final class FloatingPanelController: NSWindowController {
         panel.isOpaque = false
         panel.hasShadow = true
         panel.contentViewController = controller
-        panel.standardWindowButton(.closeButton)?.isHidden = true
-        panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
-        panel.standardWindowButton(.zoomButton)?.isHidden = true
+        panel.identifier = NSUserInterfaceItemIdentifier("floatingReminderPanel")
         panel.setFrameOrigin(Self.defaultOrigin(for: panel))
 
         super.init(window: panel)
@@ -87,59 +86,165 @@ final class FloatingPanelController: NSWindowController {
         panel.setFrameOrigin(clampedOrigin)
     }
 
+    private static let panelWidth: CGFloat = 280
+    private static let panelHeight: CGFloat = 130
+
     private static func defaultOrigin(for panel: NSPanel) -> NSPoint {
-        let visibleFrame = panel.screen?.visibleFrame ?? NSScreen.main?.visibleFrame ?? .zero
+        let visibleFrame = NSScreen.main?.visibleFrame ?? .zero
         return NSPoint(
-            x: visibleFrame.maxX - panel.frame.width - 28,
-            y: visibleFrame.maxY - panel.frame.height - 44
+            x: visibleFrame.maxX - panelWidth - 24,
+            y: visibleFrame.maxY - panelHeight - 24
         )
     }
 }
 
+// MARK: - Floating Panel View
+
 struct FloatingReminderPanelView: View {
     @ObservedObject var store: ReminderStore
+    @State private var isHovering = false
+    @State private var currentTime = Date.now
+
+    private static let panelWidth: CGFloat = 280
+    private static let panelHeight: CGFloat = 130
+
+    private let clockTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        ZStack {
-            if let reminder = store.currentReminder {
-                ReminderCardView(reminder: reminder, compact: true)
+        Group {
+            if let reminder = store.floatingPanelReminder {
+                panelContent(reminder: reminder)
             } else {
-                RoundedRectangle(cornerRadius: 28, style: .continuous)
-                    .fill(Color.primary.opacity(0.05))
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(.ultraThinMaterial)
+            }
+        }
+        .frame(width: Self.panelWidth, height: Self.panelHeight)
+        .background(Color.clear)
+        .onReceive(clockTimer) { time in
+            currentTime = time
+        }
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isHovering = hovering
+            }
+        }
+    }
+
+    private func panelContent(reminder: Reminder) -> some View {
+        let progress = DayProgress.fraction(for: currentTime)
+
+        return ZStack {
+            // Dimmed background (the "remaining" portion)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            reminder.palette.startColor.opacity(0.3),
+                            reminder.palette.endColor.opacity(0.3),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            // Bright gradient clipped to elapsed portion — the card IS the progress bar
+            GeometryReader { geo in
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [reminder.palette.startColor, reminder.palette.endColor],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: geo.size.width)
+                    .mask(
+                        HStack(spacing: 0) {
+                            Rectangle()
+                                .frame(width: geo.size.width * progress)
+                            Spacer(minLength: 0)
+                        }
+                    )
             }
 
-            VStack {
-                HStack {
+            // Time-of-day tint overlay
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(TimeOfDayTint.tintColor(for: currentTime))
+
+            // Content
+            VStack(alignment: .leading, spacing: 0) {
+                // Top row: time with seconds + day progress percentage
+                HStack(alignment: .center) {
+                    Text(currentTime, format: .dateTime.hour().minute().second())
+                        .font(.system(size: 12, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.white.opacity(0.7))
+                        .monospacedDigit()
+                        .contentTransition(.numericText())
+
                     Spacer()
 
-                    Button {
-                        store.selectNextReminder()
-                    } label: {
-                        Image(systemName: "arrow.triangle.2.circlepath")
-                            .font(.body.weight(.bold))
-                    }
-                    .buttonStyle(.plain)
-                    .padding(10)
-                    .background(.ultraThinMaterial, in: Circle())
+                    if isHovering {
+                        HStack(spacing: 6) {
+                            Button {
+                                store.selectNextReminder()
+                            } label: {
+                                Image(systemName: "forward.fill")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+                            .frame(width: 22, height: 22)
+                            .background(.white.opacity(0.18), in: Circle())
+                            .accessibilityIdentifier("nextReminderButton")
 
-                    Button {
-                        store.isFloatingPanelVisible = false
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.body.weight(.bold))
+                            Button {
+                                store.isFloatingPanelVisible = false
+                            } label: {
+                                Image(systemName: "xmark")
+                                    .font(.system(size: 9, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                            .buttonStyle(.plain)
+                            .frame(width: 22, height: 22)
+                            .background(.white.opacity(0.18), in: Circle())
+                        }
+                        .transition(.opacity.combined(with: .scale(scale: 0.8)))
+                    } else {
+                        Text("今天已过 \(DayProgress.percent(for: currentTime))%")
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.5))
+                            .contentTransition(.numericText())
                     }
-                    .buttonStyle(.plain)
-                    .padding(10)
-                    .background(.ultraThinMaterial, in: Circle())
                 }
 
-                Spacer()
+                Spacer().frame(height: 10)
+
+                // Reminder title
+                Text(reminder.title)
+                    .font(.system(size: 16, weight: .bold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                    .accessibilityIdentifier("floatingPanelTitle")
+
+                Spacer().frame(height: 4)
+
+                // Reminder message
+                Text(reminder.message)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.85))
+                    .lineSpacing(3)
+                    .lineLimit(2)
+
+                Spacer(minLength: 0)
             }
-            .padding(16)
+            .padding(.horizontal, 14)
+            .padding(.top, 10)
+            .padding(.bottom, 12)
         }
-        .padding(10)
-        .frame(width: 360, height: 260)
-        .background(Color.clear)
+        .frame(width: Self.panelWidth, height: Self.panelHeight)
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
     }
 }
 

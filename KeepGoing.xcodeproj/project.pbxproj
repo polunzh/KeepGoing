@@ -9,26 +9,58 @@
 /* Begin PBXBuildFile section */
 		19ED5D1A1663CE0B327C6C1F /* ReminderCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BE6CBE3BB2114E6E5690FC /* ReminderCardView.swift */; };
 		1BACF17E10F8A8F6D84CB2CC /* ReminderWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B8B7020A9E98838E40C680 /* ReminderWorkspaceView.swift */; };
+		2D525A944587F599E3FFF45D /* ReminderStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99050F048ADAD60C6410FD2 /* ReminderStoreTests.swift */; };
+		363DE6F14FC50B3B598E3F96 /* TimeOfDayTint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F41C5FB5B48CFEAD2E0435 /* TimeOfDayTint.swift */; };
 		49D7E0A792EFE6B2A704B807 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08EC519480E2F3486A31981A /* Reminder.swift */; };
+		4AE0007883E5C572149B2822 /* DayProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806E5ACB274A94CE1F652AF /* DayProgress.swift */; };
 		5886597E190C2FE408189DD4 /* ReminderDetailForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 595C4F49118A902C3D1B3F57 /* ReminderDetailForm.swift */; };
 		5C868C9FE08801304716445C /* ReminderWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7B8B7020A9E98838E40C680 /* ReminderWorkspaceView.swift */; };
 		5DE61C2FB0BDBF3F6017EB47 /* Reminder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08EC519480E2F3486A31981A /* Reminder.swift */; };
 		6F0CBF3D46D59759AFC0A3F1 /* KeepGoingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5816F0BDDD86E8B68CD55611 /* KeepGoingApp.swift */; };
 		86384E7E196CF607A1C59CCB /* FloatingPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CDE203C82BD6EED808321F /* FloatingPanelController.swift */; };
 		8DA71D5283982E8BC8A2B6EE /* ReminderDetailForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 595C4F49118A902C3D1B3F57 /* ReminderDetailForm.swift */; };
+		8EC28B14FDC7E51294FFE436 /* TimeOfDayTint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12F41C5FB5B48CFEAD2E0435 /* TimeOfDayTint.swift */; };
+		9A3A90B1FED391029DB69FEC /* DayProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = B806E5ACB274A94CE1F652AF /* DayProgress.swift */; };
 		9A4CF2573CC0BF45270CC47C /* ReminderCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BE6CBE3BB2114E6E5690FC /* ReminderCardView.swift */; };
 		A110A9CC46F89A680B56408B /* KeepGoingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5816F0BDDD86E8B68CD55611 /* KeepGoingApp.swift */; };
 		B4543C1F3B22F299449357E6 /* ReminderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26232D7F0918F6A47288E3 /* ReminderStore.swift */; };
 		DD86994DC0F99B9EF4E9F208 /* ReminderStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E26232D7F0918F6A47288E3 /* ReminderStore.swift */; };
+		DE7C473A0F8BDCCE40EFCD6E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C0F3D20099053CFACF30221E /* Assets.xcassets */; };
+		E48F394DC4AF552F95C21E32 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C0F3D20099053CFACF30221E /* Assets.xcassets */; };
 		EC53BAAC6BE2430C50E6FD37 /* FloatingPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28CDE203C82BD6EED808321F /* FloatingPanelController.swift */; };
+		F27617963FD2DB65C0D8D399 /* FloatingPanelUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9DABF163C651B59FAA6D3CF /* FloatingPanelUITests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C4A8F01D5972CCEB6A6C2072 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 90EFD4F5F24BEF42B13CCADE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6E7B7E1ABFE4CE9330AD8421;
+			remoteInfo = KeepGoing_macOS;
+		};
+		D6D9C935E8BE3993F67F4AD5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 90EFD4F5F24BEF42B13CCADE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6E7B7E1ABFE4CE9330AD8421;
+			remoteInfo = KeepGoing_macOS;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		08EC519480E2F3486A31981A /* Reminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reminder.swift; sourceTree = "<group>"; };
+		12F41C5FB5B48CFEAD2E0435 /* TimeOfDayTint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeOfDayTint.swift; sourceTree = "<group>"; };
+		16BDE511748BEFB79FFF61CC /* KeepGoingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeepGoingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		28CDE203C82BD6EED808321F /* FloatingPanelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanelController.swift; sourceTree = "<group>"; };
+		3754A092AADFFC77CCDE09AD /* KeepGoingUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeepGoingUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5816F0BDDD86E8B68CD55611 /* KeepGoingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepGoingApp.swift; sourceTree = "<group>"; };
 		595C4F49118A902C3D1B3F57 /* ReminderDetailForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderDetailForm.swift; sourceTree = "<group>"; };
 		6E26232D7F0918F6A47288E3 /* ReminderStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderStore.swift; sourceTree = "<group>"; };
+		A99050F048ADAD60C6410FD2 /* ReminderStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderStoreTests.swift; sourceTree = "<group>"; };
+		B806E5ACB274A94CE1F652AF /* DayProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayProgress.swift; sourceTree = "<group>"; };
+		C0F3D20099053CFACF30221E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		C9DABF163C651B59FAA6D3CF /* FloatingPanelUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingPanelUITests.swift; sourceTree = "<group>"; };
 		CE16609AE3532310A59612EA /* KeepGoing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KeepGoing.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E7B8B7020A9E98838E40C680 /* ReminderWorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderWorkspaceView.swift; sourceTree = "<group>"; };
 		F4BE6CBE3BB2114E6E5690FC /* ReminderCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReminderCardView.swift; sourceTree = "<group>"; };
@@ -44,11 +76,22 @@
 			path = macOS;
 			sourceTree = "<group>";
 		};
+		19A8199A0A8DA82A08CA5E28 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				F9E29AAE0C6F08F86F9A5601 /* KeepGoingTests */,
+				DC7E2CF773A50B380D79290A /* KeepGoingUITests */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		5E51DC00E5FC7ED1CE2A8BB3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				FED5C996DC5C33B16569793E /* KeepGoing.app */,
 				CE16609AE3532310A59612EA /* KeepGoing.app */,
+				16BDE511748BEFB79FFF61CC /* KeepGoingTests.xctest */,
+				3754A092AADFFC77CCDE09AD /* KeepGoingUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -66,8 +109,10 @@
 		9E7F29FB486CCC82E202787E /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				B806E5ACB274A94CE1F652AF /* DayProgress.swift */,
 				08EC519480E2F3486A31981A /* Reminder.swift */,
 				6E26232D7F0918F6A47288E3 /* ReminderStore.swift */,
+				12F41C5FB5B48CFEAD2E0435 /* TimeOfDayTint.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -75,6 +120,7 @@
 		D8221C54F1D900A3D8615845 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				C0F3D20099053CFACF30221E /* Assets.xcassets */,
 				5816F0BDDD86E8B68CD55611 /* KeepGoingApp.swift */,
 				0630400E78396811DB146EAB /* macOS */,
 				9E7F29FB486CCC82E202787E /* Models */,
@@ -83,12 +129,29 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
+		DC7E2CF773A50B380D79290A /* KeepGoingUITests */ = {
+			isa = PBXGroup;
+			children = (
+				C9DABF163C651B59FAA6D3CF /* FloatingPanelUITests.swift */,
+			);
+			path = KeepGoingUITests;
+			sourceTree = "<group>";
+		};
 		F7F8DB10DD64DB565E13D84C = {
 			isa = PBXGroup;
 			children = (
 				D8221C54F1D900A3D8615845 /* Sources */,
+				19A8199A0A8DA82A08CA5E28 /* Tests */,
 				5E51DC00E5FC7ED1CE2A8BB3 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		F9E29AAE0C6F08F86F9A5601 /* KeepGoingTests */ = {
+			isa = PBXGroup;
+			children = (
+				A99050F048ADAD60C6410FD2 /* ReminderStoreTests.swift */,
+			);
+			path = KeepGoingTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -99,6 +162,7 @@
 			buildConfigurationList = 9C6086E72ED368AE76C8283A /* Build configuration list for PBXNativeTarget "KeepGoing_iOS" */;
 			buildPhases = (
 				62EFCBBFF47656D2365C3259 /* Sources */,
+				B6753CFF2E0175F33A100926 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -111,11 +175,30 @@
 			productReference = FED5C996DC5C33B16569793E /* KeepGoing.app */;
 			productType = "com.apple.product-type.application";
 		};
+		388CFF75F55A0D9F35ACF168 /* KeepGoingUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D8ECA8E4AAAB4CDB0B41E73D /* Build configuration list for PBXNativeTarget "KeepGoingUITests" */;
+			buildPhases = (
+				1AC571A6E3CBA47FA20ACA4A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D32861982DC3C0FD54F1395E /* PBXTargetDependency */,
+			);
+			name = KeepGoingUITests;
+			packageProductDependencies = (
+			);
+			productName = KeepGoingUITests;
+			productReference = 3754A092AADFFC77CCDE09AD /* KeepGoingUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		6E7B7E1ABFE4CE9330AD8421 /* KeepGoing_macOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5A54A3F4F314A70B4B348312 /* Build configuration list for PBXNativeTarget "KeepGoing_macOS" */;
 			buildPhases = (
 				259BDB4CE58CA91965C81426 /* Sources */,
+				9B574BE067F7F42DDB4575AF /* Resources */,
 			);
 			buildRules = (
 			);
@@ -128,6 +211,24 @@
 			productReference = CE16609AE3532310A59612EA /* KeepGoing.app */;
 			productType = "com.apple.product-type.application";
 		};
+		EED317DE1E97D31EFE4B6A0D /* KeepGoingTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9BC6F51F6B3229C2FD916DDD /* Build configuration list for PBXNativeTarget "KeepGoingTests" */;
+			buildPhases = (
+				59DB66CAF7E650FE721E88D0 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				32D8CFCA397661D1861AD4B1 /* PBXTargetDependency */,
+			);
+			name = KeepGoingTests;
+			packageProductDependencies = (
+			);
+			productName = KeepGoingTests;
+			productReference = 16BDE511748BEFB79FFF61CC /* KeepGoingTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -136,6 +237,11 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					388CFF75F55A0D9F35ACF168 = {
+						TestTargetID = 6E7B7E1ABFE4CE9330AD8421;
+					};
+				};
 			};
 			buildConfigurationList = 894DBC9B9C67DBBB63CCC1A8 /* Build configuration list for PBXProject "KeepGoing" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -151,17 +257,47 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				EED317DE1E97D31EFE4B6A0D /* KeepGoingTests */,
+				388CFF75F55A0D9F35ACF168 /* KeepGoingUITests */,
 				0207F00E169F8BACD92DFA11 /* KeepGoing_iOS */,
 				6E7B7E1ABFE4CE9330AD8421 /* KeepGoing_macOS */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		9B574BE067F7F42DDB4575AF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E48F394DC4AF552F95C21E32 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B6753CFF2E0175F33A100926 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DE7C473A0F8BDCCE40EFCD6E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
+		1AC571A6E3CBA47FA20ACA4A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F27617963FD2DB65C0D8D399 /* FloatingPanelUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		259BDB4CE58CA91965C81426 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4AE0007883E5C572149B2822 /* DayProgress.swift in Sources */,
 				86384E7E196CF607A1C59CCB /* FloatingPanelController.swift in Sources */,
 				A110A9CC46F89A680B56408B /* KeepGoingApp.swift in Sources */,
 				49D7E0A792EFE6B2A704B807 /* Reminder.swift in Sources */,
@@ -169,6 +305,15 @@
 				8DA71D5283982E8BC8A2B6EE /* ReminderDetailForm.swift in Sources */,
 				DD86994DC0F99B9EF4E9F208 /* ReminderStore.swift in Sources */,
 				1BACF17E10F8A8F6D84CB2CC /* ReminderWorkspaceView.swift in Sources */,
+				8EC28B14FDC7E51294FFE436 /* TimeOfDayTint.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		59DB66CAF7E650FE721E88D0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2D525A944587F599E3FFF45D /* ReminderStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,6 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9A3A90B1FED391029DB69FEC /* DayProgress.swift in Sources */,
 				EC53BAAC6BE2430C50E6FD37 /* FloatingPanelController.swift in Sources */,
 				6F0CBF3D46D59759AFC0A3F1 /* KeepGoingApp.swift in Sources */,
 				5DE61C2FB0BDBF3F6017EB47 /* Reminder.swift in Sources */,
@@ -183,12 +329,44 @@
 				5886597E190C2FE408189DD4 /* ReminderDetailForm.swift in Sources */,
 				B4543C1F3B22F299449357E6 /* ReminderStore.swift in Sources */,
 				5C868C9FE08801304716445C /* ReminderWorkspaceView.swift in Sources */,
+				363DE6F14FC50B3B598E3F96 /* TimeOfDayTint.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		32D8CFCA397661D1861AD4B1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6E7B7E1ABFE4CE9330AD8421 /* KeepGoing_macOS */;
+			targetProxy = D6D9C935E8BE3993F67F4AD5 /* PBXContainerItemProxy */;
+		};
+		D32861982DC3C0FD54F1395E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6E7B7E1ABFE4CE9330AD8421 /* KeepGoing_macOS */;
+			targetProxy = C4A8F01D5972CCEB6A6C2072 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0393A15C3CC5196878F8A769 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhenqiang.KeepGoingTests;
+				PRODUCT_MODULE_NAME = KeepGoingTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeepGoing.app/Contents/MacOS/KeepGoing";
+			};
+			name = Release;
+		};
 		504D11CFB262482C01CCC3E6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -292,6 +470,42 @@
 			};
 			name = Debug;
 		};
+		886D7DA21CA6254C7638F6A9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhenqiang.KeepGoingUITests;
+				PRODUCT_MODULE_NAME = KeepGoingUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = KeepGoing_macOS;
+			};
+			name = Debug;
+		};
+		AA47C76605A02EB8AAAA95DE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhenqiang.KeepGoingUITests;
+				PRODUCT_MODULE_NAME = KeepGoingUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = KeepGoing_macOS;
+			};
+			name = Release;
+		};
 		CCC5D9036DD7BA70C4A0EB45 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -388,6 +602,24 @@
 			};
 			name = Release;
 		};
+		F1C5FD135F7EFE2DAA2E5B43 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhenqiang.KeepGoingTests;
+				PRODUCT_MODULE_NAME = KeepGoingTests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/KeepGoing.app/Contents/MacOS/KeepGoing";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -409,11 +641,29 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		9BC6F51F6B3229C2FD916DDD /* Build configuration list for PBXNativeTarget "KeepGoingTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F1C5FD135F7EFE2DAA2E5B43 /* Debug */,
+				0393A15C3CC5196878F8A769 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		9C6086E72ED368AE76C8283A /* Build configuration list for PBXNativeTarget "KeepGoing_iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7DCD47B278BC8BBD20AEFF6B /* Debug */,
 				E81357529658C14A50DF3F28 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D8ECA8E4AAAB4CDB0B41E73D /* Build configuration list for PBXNativeTarget "KeepGoingUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				886D7DA21CA6254C7638F6A9 /* Debug */,
+				AA47C76605A02EB8AAAA95DE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

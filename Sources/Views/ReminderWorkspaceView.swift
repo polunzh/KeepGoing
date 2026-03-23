@@ -2,143 +2,195 @@ import SwiftUI
 
 struct ReminderWorkspaceView: View {
     @ObservedObject var store: ReminderStore
+    @State private var selection: Reminder.ID?
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    hero
-                    controls
-                    reminderList
-                    detailPanel
+        NavigationSplitView {
+            sidebar
+                .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 300)
+        } detail: {
+            detail
+        }
+        .onAppear {
+            selection = store.selectedReminderID
+        }
+        .onChange(of: selection) { _, newValue in
+            if let newValue {
+                store.selectReminder(id: newValue)
+            }
+        }
+        .onChange(of: store.selectedReminderID) { _, newValue in
+            selection = newValue
+        }
+    }
+
+    // MARK: - Sidebar
+
+    private var sidebar: some View {
+        List(selection: $selection) {
+            Section {
+                ForEach(store.reminders) { reminder in
+                    ReminderRow(reminder: reminder)
+                        .tag(reminder.id)
                 }
-                .padding(24)
+                .onDelete { indexSet in
+                    for index in indexSet {
+                        store.deleteReminder(id: store.reminders[index].id)
+                    }
+                }
             }
-            .navigationTitle("KeepGoing")
-        }
-    }
 
-    private var hero: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("把一句能拉住你的话，挂在桌面上。")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-
-            Text("macOS 会显示一个可置顶的悬浮提醒窗；iPhone 上也可以同步编辑同一份本地提醒内容。第一版先专注恢复行动感。")
-                .font(.title3)
-                .foregroundStyle(.secondary)
-
-            if let currentReminder = store.currentReminder {
-                ReminderCardView(reminder: currentReminder)
-            }
-        }
-    }
-
-    private var controls: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
+            Section {
                 Button(action: store.addReminder) {
-                    Label("新增提醒", systemImage: "plus")
+                    Label("添加提醒", systemImage: "plus.circle.fill")
+                        .foregroundStyle(.blue)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.plain)
+            }
 
-                Button(action: store.selectNextReminder) {
-                    Label("切换下一条", systemImage: "arrow.triangle.2.circlepath")
-                }
-                .buttonStyle(.bordered)
+            Section("轮播间隔") {
+                CycleIntervalPicker(interval: $store.cycleInterval)
 
                 #if os(macOS)
-                Button(action: toggleFloatingPanel) {
+                Button {
+                    store.isFloatingPanelVisible.toggle()
+                    FloatingPanelController.shared.syncVisibility()
+                } label: {
                     Label(
                         store.isFloatingPanelVisible ? "隐藏悬浮窗" : "显示悬浮窗",
-                        systemImage: store.isFloatingPanelVisible ? "pin.slash" : "pin"
+                        systemImage: store.isFloatingPanelVisible ? "eye.slash" : "eye"
                     )
                 }
-                .buttonStyle(.bordered)
                 #endif
-
-                Spacer()
             }
-
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text("轮播间隔")
-                    Spacer()
-                    Text("\(Int(store.cycleInterval)) 秒")
-                        .foregroundStyle(.secondary)
-                }
-
-                Slider(value: $store.cycleInterval, in: 5...60, step: 1)
-            }
-            .padding(18)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color.primary.opacity(0.04))
-            )
         }
-    }
-
-    private var reminderList: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("提醒列表")
-                .font(.title2.weight(.bold))
-
-            LazyVGrid(columns: adaptiveColumns, spacing: 16) {
-                ForEach(store.reminders) { reminder in
-                    Button {
-                        store.selectReminder(id: reminder.id)
-                    } label: {
-                        VStack(alignment: .leading, spacing: 10) {
-                            ReminderCardView(reminder: reminder, compact: true)
-
-                            HStack {
-                                Text(reminder.title)
-                                    .font(.headline)
-                                    .lineLimit(1)
-
-                                Spacer()
-
-                                if store.selectedReminderID == reminder.id {
-                                    Text("当前")
-                                        .font(.caption.weight(.bold))
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 4)
-                                        .background(Color.accentColor.opacity(0.12), in: Capsule())
-                                }
-                            }
-                        }
-                    }
-                    .buttonStyle(.plain)
+        .navigationTitle("KeepGoing")
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button(action: store.addReminder) {
+                    Image(systemName: "plus")
                 }
             }
         }
     }
+
+    // MARK: - Detail
 
     @ViewBuilder
-    private var detailPanel: some View {
-        if let selectedReminderID = store.selectedReminderID, let binding = store.binding(for: selectedReminderID) {
-            ReminderDetailForm(binding: binding) {
-                store.deleteReminder(id: selectedReminderID)
+    private var detail: some View {
+        if let selectedID = selection,
+           let binding = store.binding(for: selectedID) {
+            ScrollView {
+                VStack(spacing: 24) {
+                    ReminderCardView(reminder: binding.reminder)
+                        .padding(.horizontal)
+
+                    ReminderDetailForm(binding: binding) {
+                        store.deleteReminder(id: selectedID)
+                    }
+                    .id(selectedID)
+                }
+                .padding(.vertical, 24)
             }
-            .id(selectedReminderID)
+            .scrollIndicators(.hidden)
+            .accessibilityIdentifier("detailScrollView")
         } else {
             ContentUnavailableView(
-                "还没有可编辑的提醒",
-                systemImage: "note.text.badge.plus",
-                description: Text("先创建一条提醒。")
+                "选择一条提醒",
+                systemImage: "hand.tap",
+                description: Text("在左侧列表中选择一条提醒来查看和编辑。")
             )
         }
     }
+}
 
-    private var adaptiveColumns: [GridItem] {
-        [GridItem(.adaptive(minimum: 280, maximum: 380), spacing: 16)]
+// MARK: - Cycle Interval Picker
+
+private struct CycleIntervalPicker: View {
+    @Binding var interval: Double
+
+    private static let presets: [(String, Double)] = [
+        ("30 秒", 30),
+        ("5 分钟", 300),
+        ("25 分钟", 1500),
+        ("1 小时", 3600),
+        ("每天", 86400),
+    ]
+
+    private var currentLabel: String {
+        Self.presets.first { $0.1 == interval }?.0 ?? formatCustom(interval)
     }
 
-    #if os(macOS)
-    private func toggleFloatingPanel() {
-        store.isFloatingPanelVisible.toggle()
-        FloatingPanelController.shared.syncVisibility()
+    var body: some View {
+        Menu {
+            ForEach(Self.presets, id: \.1) { label, value in
+                Button {
+                    interval = value
+                } label: {
+                    if interval == value {
+                        Label(label, systemImage: "checkmark")
+                    } else {
+                        Text(label)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text(currentLabel)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2)
+            }
+            .font(.subheadline)
+            .foregroundStyle(.primary)
+        }
+        .menuStyle(.borderlessButton)
+        .fixedSize()
     }
-    #endif
+
+    private func formatCustom(_ seconds: Double) -> String {
+        let minutes = Int(seconds / 60)
+        if minutes < 60 {
+            return "\(minutes) 分钟"
+        }
+        let hours = minutes / 60
+        let remainingMinutes = minutes % 60
+        if remainingMinutes == 0 {
+            return "\(hours) 小时"
+        }
+        return "\(hours) 小时 \(remainingMinutes) 分"
+    }
+}
+
+// MARK: - Sidebar Row
+
+private struct ReminderRow: View {
+    let reminder: Reminder
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Circle()
+                .fill(
+                    LinearGradient(
+                        colors: [reminder.palette.startColor, reminder.palette.endColor],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 12, height: 12)
+
+            Text(reminder.title)
+                .lineLimit(1)
+
+            Spacer()
+
+            if !reminder.isEnabled {
+                Image(systemName: "eye.slash")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+        .padding(.vertical, 2)
+    }
 }
 
 #Preview {

@@ -25,6 +25,50 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.zhenqiang.KeepGoing
         INFOPLIST_KEY_CFBundleDisplayName: KeepGoing
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SUPPORTS_MACCATALYST: NO
     scheme:
       gatherCoverageData: false
+      testTargets:
+        - KeepGoingTests
+        - KeepGoingUITests
+
+  KeepGoingTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget:
+      macOS: "14.0"
+    sources:
+      - path: Tests/KeepGoingTests
+    dependencies:
+      - target: KeepGoing_macOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.zhenqiang.KeepGoingTests
+        PRODUCT_MODULE_NAME: KeepGoingTests
+        GENERATE_INFOPLIST_FILE: YES
+
+  KeepGoingUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    deploymentTarget:
+      macOS: "14.0"
+    sources:
+      - path: Tests/KeepGoingUITests
+    dependencies:
+      - target: KeepGoing_macOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.zhenqiang.KeepGoingUITests
+        PRODUCT_MODULE_NAME: KeepGoingUITests
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  KeepGoingTests:
+    build:
+      targets:
+        KeepGoing_macOS: [test]
+        KeepGoingTests: [test]
+    test:
+      targets:
+        - KeepGoingTests

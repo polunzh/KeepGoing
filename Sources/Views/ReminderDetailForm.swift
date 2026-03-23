@@ -14,17 +14,6 @@ struct ReminderDetailForm: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            HStack {
-                Text("编辑提醒")
-                    .font(.title2.weight(.bold))
-
-                Spacer()
-
-                Button(role: .destructive, action: onDelete) {
-                    Label("删除", systemImage: "trash")
-                }
-            }
-
             VStack(alignment: .leading, spacing: 12) {
                 Text("标题")
                     .font(.headline)
@@ -47,27 +36,49 @@ struct ReminderDetailForm: View {
                     Text("配色")
                         .font(.headline)
 
-                    Picker("配色", selection: $draft.palette) {
+                    HStack(spacing: 10) {
                         ForEach(ReminderPalette.allCases) { palette in
-                            Text(palette.title).tag(palette)
+                            Button {
+                                draft.palette = palette
+                            } label: {
+                                ZStack {
+                                    Circle()
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [palette.startColor, palette.endColor],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                        .frame(width: 32, height: 32)
+
+                                    if draft.palette == palette {
+                                        Circle()
+                                            .strokeBorder(.white, lineWidth: 2.5)
+                                            .frame(width: 32, height: 32)
+                                        Image(systemName: "checkmark")
+                                            .font(.system(size: 12, weight: .bold))
+                                            .foregroundStyle(.white)
+                                    }
+                                }
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
-                    .pickerStyle(.segmented)
                 }
+            }
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("预览")
-                        .font(.headline)
+            Divider()
 
-                    ReminderCardView(reminder: draft, compact: true)
+            HStack {
+                Spacer()
+
+                Button(role: .destructive, action: onDelete) {
+                    Label("删除这条提醒", systemImage: "trash")
                 }
             }
         }
-        .padding(24)
-        .background(
-            RoundedRectangle(cornerRadius: 30, style: .continuous)
-                .fill(Color.primary.opacity(0.04))
-        )
+        .padding(.horizontal)
         .onChange(of: draft) { _, newValue in
             onSave(newValue)
         }

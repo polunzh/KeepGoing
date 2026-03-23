@@ -41,7 +41,7 @@ final class ReminderStore: ObservableObject {
     private let userDefaults: UserDefaults
     private var rotationTimer: Timer?
 
-    private init(userDefaults: UserDefaults = .standard) {
+    init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
 
         let initialState: PersistedState
@@ -55,7 +55,12 @@ final class ReminderStore: ObservableObject {
             let defaultReminders = [
                 Reminder(
                     title: "先开始就算赢",
-                    message: "你不需要一下子追上时代，你只需要今天继续前进。",
+                    message: "只做 5 分钟也可以。先开始，比做好更重要。",
+                    palette: .amber
+                ),
+                Reminder(
+                    title: "情绪不是结论",
+                    message: "我感到绝望，只说明我现在压力很大，不说明我真的没有未来。",
                     palette: .sky
                 ),
                 Reminder(
@@ -64,17 +69,37 @@ final class ReminderStore: ObservableObject {
                     palette: .leaf
                 ),
                 Reminder(
-                    title: "用证据说话",
-                    message: "只要你还在学、还在做、还在积累，你就没有出局。",
+                    title: "我没有出局",
+                    message: "只要我还在学、还在做、还在积累，我就没有出局。",
                     palette: .amber
-                )
+                ),
+                Reminder(
+                    title: "今天只做一件小事",
+                    message: "小步不是没用，小步是在恢复掌控感。",
+                    palette: .leaf
+                ),
+                Reminder(
+                    title: "先不要把自己耗坏",
+                    message: "先保护基本秩序：吃饭、睡觉、出门、做一点事。能守住这些，不是没出息，而是在保命。",
+                    palette: .rose
+                ),
+                Reminder(
+                    title: "休息不是投降",
+                    message: "真正的休息应该让我更能呼吸、更能清醒，而不是让我陷入更深的麻木。",
+                    palette: .rose
+                ),
+                Reminder(
+                    title: "穿过这段黑路",
+                    message: "穿过去，靠的不是瞬间爆发，而是不停下。",
+                    palette: .slate
+                ),
             ]
 
             initialState = PersistedState(
                 reminders: defaultReminders,
                 selectedReminderID: defaultReminders.first?.id,
                 isFloatingPanelVisible: true,
-                cycleInterval: 12
+                cycleInterval: 86400
             )
         }
 
@@ -93,6 +118,19 @@ final class ReminderStore: ObservableObject {
         }
 
         return reminders.first(where: \.isEnabled) ?? reminders.first
+    }
+
+    /// The reminder to display in the floating panel — follows selection, changes on selectNextReminder().
+    var floatingPanelReminder: Reminder? {
+        currentReminder
+    }
+
+    var dailyReminder: Reminder? {
+        let enabled = reminders.filter(\.isEnabled)
+        let source = enabled.isEmpty ? reminders : enabled
+        guard !source.isEmpty else { return nil }
+        let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: .now) ?? 0
+        return source[dayOfYear % source.count]
     }
 
     func addReminder() {
