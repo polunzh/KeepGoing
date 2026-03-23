@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Screenshots/appicon.png" width="128" height="128" alt="KeepGoing App Icon">
+  <img src="Screenshots/keepgoing-logo.png" width="320" alt="KeepGoing Logo">
 </p>
 
 <h1 align="center">KeepGoing</h1>
