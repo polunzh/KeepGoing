@@ -328,20 +328,60 @@ private struct HeartShape: Shape {
         let w = rect.width
         let h = rect.height
 
-        path.move(to: CGPoint(x: w * 0.5, y: h * 0.25))
+        // Start at the bottom tip
+        path.move(to: CGPoint(x: w * 0.5, y: h))
 
-        // Left curve
+        // Left side: bottom tip → left bump → center dip
         path.addCurve(
-            to: CGPoint(x: w * 0.5, y: h * 0.95),
-            control1: CGPoint(x: w * -0.1, y: h * -0.2),
-            control2: CGPoint(x: w * 0.0, y: h * 0.7)
+            to: CGPoint(x: w * 0.5, y: h * 0.3),
+            control1: CGPoint(x: w * -0.05, y: h * 0.65),
+            control2: CGPoint(x: w * 0.0, y: h * 0.3)
         )
 
-        // Right curve
+        // Left bump top arc
+        path.addCurve(
+            to: CGPoint(x: w * 0.25, y: h * 0.0),
+            control1: CGPoint(x: w * 0.12, y: h * 0.0),
+            control2: CGPoint(x: w * 0.25, y: h * 0.0)
+        )
+
+        // Left bump outer arc (wider, rounder)
+        path.addCurve(
+            to: CGPoint(x: w * 0.0, y: h * 0.3),
+            control1: CGPoint(x: w * -0.05, y: h * 0.0),
+            control2: CGPoint(x: w * -0.05, y: h * 0.2)
+        )
+
+        // Reset — use symmetrical approach with two arcs per side
+        path = Path()
+        path.move(to: CGPoint(x: w * 0.5, y: h * 0.95))
+
+        // Left curve to left peak
+        path.addCurve(
+            to: CGPoint(x: w * 0.0, y: h * 0.3),
+            control1: CGPoint(x: w * 0.15, y: h * 0.7),
+            control2: CGPoint(x: w * -0.05, y: h * 0.55)
+        )
+
+        // Left peak arc (big round bump)
         path.addCurve(
             to: CGPoint(x: w * 0.5, y: h * 0.25),
-            control1: CGPoint(x: w * 1.0, y: h * 0.7),
-            control2: CGPoint(x: w * 1.1, y: h * -0.2)
+            control1: CGPoint(x: w * 0.05, y: h * -0.1),
+            control2: CGPoint(x: w * 0.35, y: h * 0.1)
+        )
+
+        // Right peak arc (mirror)
+        path.addCurve(
+            to: CGPoint(x: w * 1.0, y: h * 0.3),
+            control1: CGPoint(x: w * 0.65, y: h * 0.1),
+            control2: CGPoint(x: w * 0.95, y: h * -0.1)
+        )
+
+        // Right curve to bottom tip
+        path.addCurve(
+            to: CGPoint(x: w * 0.5, y: h * 0.95),
+            control1: CGPoint(x: w * 1.05, y: h * 0.55),
+            control2: CGPoint(x: w * 0.85, y: h * 0.7)
         )
 
         path.closeSubpath()
