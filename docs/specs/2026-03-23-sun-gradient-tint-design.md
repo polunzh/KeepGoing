@@ -41,15 +41,28 @@ The current `TimeOfDayTint` uses 4 discrete time periods (morning/midday/evening
 
 The table wraps: 20:30 → 0:00 interpolates back to the first anchor.
 
+### Data Structure
+
+```swift
+struct SunAnchor {
+    let hour: Double    // fractional hour, e.g. 6.25 = 6:15
+    let r, g, b: Double
+    let opacity: Double
+}
+```
+
+Anchors stored as a sorted `[SunAnchor]` array (ascending by hour).
+
 ### Interpolation Algorithm
 
 1. Convert current time to fractional hours (e.g., 6:30 → 6.5)
-2. Find the two surrounding anchor points
-3. Calculate `t = (current - prev) / (next - prev)`, normalized to [0, 1]
-4. Linearly interpolate R, G, B, and opacity independently
-5. Return `Color(red:green:blue:).opacity(interpolatedOpacity)`
+2. Find the two surrounding anchor points via linear scan of the sorted array
+3. **Midnight wrap-around**: if `currentHour >= lastAnchor.hour`, then `prev = lastAnchor` and `next = firstAnchor`. Compute the gap as `(24.0 - prev.hour) + next.hour`, and `elapsed = currentHour - prev.hour`
+4. Calculate `t = elapsed / gap`, normalized to [0, 1]
+5. Linearly interpolate R, G, B, and opacity independently: `value = prev + t * (next - prev)`
+6. Return `Color(red:green:blue:).opacity(interpolatedOpacity)`
 
-Handle the midnight wrap-around: if prev=20:30 and next=0:00, treat next as 24:00 for the arithmetic.
+Note: linear interpolation in sRGB may produce slightly desaturated midpoints during dawn/dusk transitions. With 18 closely-spaced anchors the perceptual impact is minimal. Can be upgraded to Oklab interpolation later if needed.
 
 ### Time Model
 
@@ -61,12 +74,24 @@ Handle the midnight wrap-around: if prev=20:30 and next=0:00, treat next as 24:0
 
 | File | Change |
 |------|--------|
-| `Sources/Models/TimeOfDayTint.swift` | Rewrite: anchor array + interpolation logic |
+| `Sources/Models/TimeOfDayTint.swift` | Rewrite: anchor array + interpolation logic, remove `Period` enum |
+| `Tests/KeepGoingTests/ReminderStoreTests.swift` | Rewrite `TimeOfDayTintTests`: replace `Period`-based assertions with color/opacity value checks |
 
-No other files need changes. The `FloatingReminderPanelView` already calls `TimeOfDayTint.tintColor(for: currentTime)` every second via its timer.
+The `FloatingReminderPanelView` already calls `TimeOfDayTint.tintColor(for: currentTime)` every second via its timer — no changes needed there.
+
+## Test Plan
+
+Existing tests (4 tests in `TimeOfDayTintTests`) assert against the `Period` enum which will be removed. Replace with:
+
+- **Noon returns near-zero opacity**: at 13:00, opacity should be ~0.0
+- **Night returns high opacity blue tint**: at 3:00, opacity should be ~0.30, blue channel dominant
+- **Sunrise returns warm tint**: at 6:15, red channel should be high (~1.0), opacity ~0.20
+- **Sunset returns red tint**: at 18:00, red channel dominant, opacity ~0.24
+- **Midnight wrap-around**: at 22:00 (between 20:30 and 0:00), should interpolate smoothly without crash
+- **Boundary precision**: at exactly an anchor time, output should match that anchor's values exactly
 
 ## Backward Compatibility
 
-- The `Period` enum can be removed (no external consumers) or kept if used elsewhere
-- The public API signature is unchanged
+- The `Period` enum is removed (only consumed by tests, which are rewritten)
+- The public API signature `tintColor(for: Date) -> Color` is unchanged
 - Visual change is gradual and non-breaking
